@@ -29,7 +29,17 @@ import {
   Settings,
   Plus,
   CircleDot,
+  X,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { calculateLineItemTotal, formatPrice } from "@/lib/utils";
 
 interface LineItem {
@@ -55,6 +65,9 @@ interface QuoteLineItemsProps {
 
 export function QuoteLineItems({ lineItems, onChange }: QuoteLineItemsProps) {
   const [draggedItem, setDraggedItem] = useState<LineItem | null>(null);
+  const [isConfigDialogOpen, setIsConfigDialogOpen] = useState(false);
+  const [currentItemIndex, setCurrentItemIndex] = useState<number | null>(null);
+  const [newDetailText, setNewDetailText] = useState("");
 
   // Get the next position number
   const getNextPosition = (): number => {
@@ -293,21 +306,31 @@ export function QuoteLineItems({ lineItems, onChange }: QuoteLineItemsProps) {
                           {item.description && (
                             <div className="text-sm text-slate-500 mt-1">{item.description}</div>
                           )}
-                          {isItemWithDetails && (
+                          {(item.type === "material" || item.type === "work") && (
                             <div className="text-xs text-slate-500 mt-1 pl-4">
-                              {item.details?.map((detail, detailIndex) => (
-                                <div key={detailIndex} className="flex items-center">
-                                  <CircleDot className="h-2 w-2 mr-1" /> {detail}
-                                </div>
-                              ))}
+                              {item.details && item.details.length > 0 ? (
+                                <>
+                                  {item.details.map((detail, detailIndex) => (
+                                    <div key={detailIndex} className="flex items-center">
+                                      <CircleDot className="h-2 w-2 mr-1" /> {detail}
+                                    </div>
+                                  ))}
+                                </>
+                              ) : null}
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
                                 className="mt-1 text-xs h-6 px-2 py-0"
-                                onClick={() => addTechnicalDetail(index, "Nouveau détail technique")}
+                                onClick={() => {
+                                  setCurrentItemIndex(index);
+                                  setIsConfigDialogOpen(true);
+                                  setNewDetailText("");
+                                }}
                               >
                                 <Settings className="h-3 w-3 mr-1" />
-                                Configurer les éléments de l'ouvrage
+                                {item.details && item.details.length > 0 
+                                  ? "Configurer les éléments de l'ouvrage" 
+                                  : "Ajouter des éléments à l'ouvrage"}
                               </Button>
                             </div>
                           )}
@@ -316,22 +339,64 @@ export function QuoteLineItems({ lineItems, onChange }: QuoteLineItemsProps) {
                     </TableCell>
                     <TableCell className="text-center">
                       {(item.type === "material" || item.type === "labor" || item.type === "work") && (
-                        item.quantity || ""
+                        <Input 
+                          type="number"
+                          value={item.quantity?.toString() || ""}
+                          onChange={(e) => updateLineItem(index, "quantity", e.target.value)}
+                          className="h-8 w-16 text-center"
+                        />
                       )}
                     </TableCell>
                     <TableCell className="text-center">
                       {(item.type === "material" || item.type === "labor" || item.type === "work") && (
-                        item.unit || ""
+                        <Select
+                          value={item.unit?.toString() || ""}
+                          onValueChange={(value) => updateLineItem(index, "unit", value)}
+                        >
+                          <SelectTrigger className="h-8 w-16">
+                            <SelectValue placeholder="u" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="u">u</SelectItem>
+                            <SelectItem value="m²">m²</SelectItem>
+                            <SelectItem value="m">m</SelectItem>
+                            <SelectItem value="kg">kg</SelectItem>
+                            <SelectItem value="h">h</SelectItem>
+                            <SelectItem value="j">j</SelectItem>
+                            <SelectItem value="forfait">forfait</SelectItem>
+                          </SelectContent>
+                        </Select>
                       )}
                     </TableCell>
                     <TableCell className="text-right">
                       {(item.type === "material" || item.type === "labor" || item.type === "work") && (
-                        formatPrice(item.unitPrice || 0)
+                        <div className="flex items-center justify-end">
+                          <Input 
+                            type="number"
+                            value={item.unitPrice?.toString() || ""}
+                            onChange={(e) => updateLineItem(index, "unitPrice", e.target.value)}
+                            className="h-8 w-20 text-right"
+                          />
+                          <span className="ml-1">€</span>
+                        </div>
                       )}
                     </TableCell>
                     <TableCell className="text-center">
                       {(item.type === "material" || item.type === "labor" || item.type === "work") && (
-                        `${item.vatRate} %`
+                        <Select
+                          value={item.vatRate?.toString() || ""}
+                          onValueChange={(value) => updateLineItem(index, "vatRate", value)}
+                        >
+                          <SelectTrigger className="h-8 w-16">
+                            <SelectValue placeholder="20 %" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="0">0 %</SelectItem>
+                            <SelectItem value="5.5">5,5 %</SelectItem>
+                            <SelectItem value="10">10 %</SelectItem>
+                            <SelectItem value="20">20 %</SelectItem>
+                          </SelectContent>
+                        </Select>
                       )}
                     </TableCell>
                     <TableCell className="text-right font-medium">
@@ -420,6 +485,85 @@ export function QuoteLineItems({ lineItems, onChange }: QuoteLineItemsProps) {
           Saut de page
         </Button>
       </div>
+
+      {/* Configuration Dialog */}
+      <Dialog open={isConfigDialogOpen} onOpenChange={setIsConfigDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Configurer les éléments de l'ouvrage</DialogTitle>
+            <DialogDescription>
+              Ajoutez les détails techniques pour cet élément
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            {currentItemIndex !== null && lineItems[currentItemIndex]?.details?.length ? (
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium">Détails existants</h4>
+                <div className="border rounded-md p-3 space-y-2">
+                  {lineItems[currentItemIndex].details?.map((detail, detailIndex) => (
+                    <div key={detailIndex} className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <CircleDot className="h-3 w-3 mr-2 text-slate-400" />
+                        <span>{detail}</span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => currentItemIndex !== null && removeTechnicalDetail(currentItemIndex, detailIndex)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center text-sm text-slate-500 py-2">
+                Aucun détail technique. Ajoutez votre premier détail ci-dessous.
+              </div>
+            )}
+            
+            <div className="flex space-x-2">
+              <Input
+                placeholder="Ajoutez un détail technique..."
+                value={newDetailText}
+                onChange={(e) => setNewDetailText(e.target.value)}
+                className="flex-1"
+              />
+              <Button 
+                onClick={() => {
+                  if (newDetailText.trim() && currentItemIndex !== null) {
+                    addTechnicalDetail(currentItemIndex, newDetailText.trim());
+                    setNewDetailText("");
+                  }
+                }}
+                disabled={!newDetailText.trim()}
+              >
+                Ajouter
+              </Button>
+            </div>
+            
+            <div className="bg-slate-50 text-slate-700 rounded-md p-3 text-sm">
+              <p>Exemples de détails techniques :</p>
+              <ul className="list-disc pl-5 mt-1 space-y-1">
+                <li>BA13 standard sur ossature métallique x 1 (m²)</li>
+                <li>Rail R90 et double montant M48 x 1 (m²)</li>
+                <li>Isolation GR80 x 1 (m²)</li>
+              </ul>
+            </div>
+          </div>
+          
+          <DialogFooter className="sm:justify-end">
+            <DialogClose asChild>
+              <Button type="button" variant="secondary">
+                Fermer
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

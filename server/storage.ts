@@ -405,7 +405,230 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+import { db } from "./db";
+import { eq } from "drizzle-orm";
+
+// Remplacer MemStorage par DatabaseStorage
+export class DatabaseStorage implements IStorage {
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  async updateUser(id: number, userData: Partial<InsertUser>): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set(userData)
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  async getClient(id: number): Promise<Client | undefined> {
+    const [client] = await db.select().from(clients).where(eq(clients.id, id));
+    return client || undefined;
+  }
+
+  async getClientsByUserId(userId: number): Promise<Client[]> {
+    return await db.select().from(clients).where(eq(clients.userId, userId));
+  }
+
+  async createClient(insertClient: InsertClient): Promise<Client> {
+    const [client] = await db
+      .insert(clients)
+      .values(insertClient)
+      .returning();
+    return client;
+  }
+
+  async updateClient(id: number, clientData: Partial<InsertClient>): Promise<Client | undefined> {
+    const [client] = await db
+      .update(clients)
+      .set(clientData)
+      .where(eq(clients.id, id))
+      .returning();
+    return client;
+  }
+
+  async deleteClient(id: number): Promise<boolean> {
+    await db.delete(clients).where(eq(clients.id, id));
+    return true;
+  }
+
+  async getProject(id: number): Promise<Project | undefined> {
+    const [project] = await db.select().from(projects).where(eq(projects.id, id));
+    return project || undefined;
+  }
+
+  async getProjectsByUserId(userId: number): Promise<Project[]> {
+    return await db.select().from(projects).where(eq(projects.userId, userId));
+  }
+
+  async getProjectsByClientId(clientId: number): Promise<Project[]> {
+    return await db.select().from(projects).where(eq(projects.clientId, clientId));
+  }
+
+  async createProject(insertProject: InsertProject): Promise<Project> {
+    const [project] = await db
+      .insert(projects)
+      .values(insertProject)
+      .returning();
+    return project;
+  }
+
+  async updateProject(id: number, projectData: Partial<InsertProject>): Promise<Project | undefined> {
+    const [project] = await db
+      .update(projects)
+      .set(projectData)
+      .where(eq(projects.id, id))
+      .returning();
+    return project;
+  }
+
+  async deleteProject(id: number): Promise<boolean> {
+    await db.delete(projects).where(eq(projects.id, id));
+    return true;
+  }
+
+  async getQuote(id: number): Promise<Quote | undefined> {
+    const [quote] = await db.select().from(quotes).where(eq(quotes.id, id));
+    return quote || undefined;
+  }
+
+  async getQuotesByUserId(userId: number): Promise<Quote[]> {
+    return await db.select().from(quotes).where(eq(quotes.userId, userId));
+  }
+
+  async getQuotesByClientId(clientId: number): Promise<Quote[]> {
+    return await db.select().from(quotes).where(eq(quotes.clientId, clientId));
+  }
+
+  async getQuotesByProjectId(projectId: number): Promise<Quote[]> {
+    return await db.select().from(quotes).where(eq(quotes.projectId, projectId));
+  }
+
+  async createQuote(insertQuote: InsertQuote): Promise<Quote> {
+    const [quote] = await db
+      .insert(quotes)
+      .values(insertQuote)
+      .returning();
+    return quote;
+  }
+
+  async updateQuote(id: number, quoteData: Partial<InsertQuote>): Promise<Quote | undefined> {
+    const [quote] = await db
+      .update(quotes)
+      .set(quoteData)
+      .where(eq(quotes.id, id))
+      .returning();
+    return quote;
+  }
+
+  async deleteQuote(id: number): Promise<boolean> {
+    await db.delete(quotes).where(eq(quotes.id, id));
+    return true;
+  }
+
+  async getQuoteLineItems(quoteId: number): Promise<QuoteLineItem[]> {
+    return await db.select().from(quoteLineItems).where(eq(quoteLineItems.quoteId, quoteId));
+  }
+
+  async createQuoteLineItem(insertLineItem: InsertQuoteLineItem): Promise<QuoteLineItem> {
+    const [lineItem] = await db
+      .insert(quoteLineItems)
+      .values(insertLineItem)
+      .returning();
+    return lineItem;
+  }
+
+  async updateQuoteLineItem(id: number, lineItemData: Partial<InsertQuoteLineItem>): Promise<QuoteLineItem | undefined> {
+    const [lineItem] = await db
+      .update(quoteLineItems)
+      .set(lineItemData)
+      .where(eq(quoteLineItems.id, id))
+      .returning();
+    return lineItem;
+  }
+
+  async deleteQuoteLineItem(id: number): Promise<boolean> {
+    await db.delete(quoteLineItems).where(eq(quoteLineItems.id, id));
+    return true;
+  }
+
+  async deleteQuoteLineItemsByQuoteId(quoteId: number): Promise<boolean> {
+    await db.delete(quoteLineItems).where(eq(quoteLineItems.quoteId, quoteId));
+    return true;
+  }
+
+  async getInvoice(id: number): Promise<Invoice | undefined> {
+    const [invoice] = await db.select().from(invoices).where(eq(invoices.id, id));
+    return invoice || undefined;
+  }
+
+  async getInvoicesByUserId(userId: number): Promise<Invoice[]> {
+    return await db.select().from(invoices).where(eq(invoices.userId, userId));
+  }
+
+  async getInvoicesByQuoteId(quoteId: number): Promise<Invoice[]> {
+    return await db.select().from(invoices).where(eq(invoices.quoteId, quoteId));
+  }
+
+  async createInvoice(insertInvoice: InsertInvoice): Promise<Invoice> {
+    const [invoice] = await db
+      .insert(invoices)
+      .values(insertInvoice)
+      .returning();
+    return invoice;
+  }
+
+  async updateInvoice(id: number, invoiceData: Partial<InsertInvoice>): Promise<Invoice | undefined> {
+    const [invoice] = await db
+      .update(invoices)
+      .set(invoiceData)
+      .where(eq(invoices.id, id))
+      .returning();
+    return invoice;
+  }
+
+  async deleteInvoice(id: number): Promise<boolean> {
+    await db.delete(invoices).where(eq(invoices.id, id));
+    return true;
+  }
+
+  async getDashboardStats(userId: number): Promise<{
+    totalQuotes: number;
+    pendingQuotes: number;
+    acceptedQuotes: number;
+    totalRevenue: number;
+    quoteIncrease: number;
+    revenueIncrease: number;
+  }> {
+    // Nous allons simuler ces statistiques pour l'instant
+    return {
+      totalQuotes: 4,
+      pendingQuotes: 1,
+      acceptedQuotes: 2,
+      totalRevenue: 5750,
+      quoteIncrease: 25,
+      revenueIncrease: 15
+    };
+  }
+}
+
+export const storage = new DatabaseStorage();
 
 // Initialize demo data
 (async () => {

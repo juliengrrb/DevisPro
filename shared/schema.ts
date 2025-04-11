@@ -212,6 +212,8 @@ export const insertInvoiceSchema = createInsertSchema(invoices).pick({
   paidAmount: true,
 });
 
+// Relations entre les tables exprimées par leurs clés étrangères
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 

@@ -15,7 +15,8 @@ import {
   FileEdit, 
   Eye, 
   Copy, 
-  CreditCard 
+  CreditCard,
+  Building2
 } from "lucide-react";
 
 interface DashboardStats {

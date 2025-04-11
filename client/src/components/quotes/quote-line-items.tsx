@@ -18,18 +18,19 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
-  ChevronUp,
   ChevronDown,
   Trash2,
-  Plus,
-  LayoutGrid,
+  GripVertical,
   Hammer,
   PackageOpen,
   Type,
   ListOrdered,
   AlignLeft,
+  Settings,
+  Plus,
+  CircleDot,
 } from "lucide-react";
-import { calculateLineItemTotal } from "@/lib/utils";
+import { calculateLineItemTotal, formatPrice } from "@/lib/utils";
 
 interface LineItem {
   id?: number;
@@ -42,6 +43,9 @@ interface LineItem {
   vatRate: string | number | null;
   totalHT: string | number | null;
   position: number;
+  details?: string[]; // Pour les détails techniques (comme BA13, etc.)
+  subtotal?: string | number | null; // Pour montrer des sous-totaux à chaque niveau
+  level?: number; // Niveau hiérarchique (1, 1.1, 1.1.1)
 }
 
 interface QuoteLineItemsProps {
@@ -58,6 +62,41 @@ export function QuoteLineItems({ lineItems, onChange }: QuoteLineItemsProps) {
     return Math.max(...lineItems.map(item => item.position)) + 1;
   };
 
+  // Format the item number based on its level
+  const formatItemNumber = (item: LineItem, index: number): string => {
+    // Si c'est un item de niveau 1
+    if (!item.level) return `${index + 1}`;
+    
+    // Pour les sous-niveaux
+    if (typeof item.level === 'string') {
+      return item.level;
+    }
+    
+    // Trouver le parent
+    const parentIndex = lineItems.findIndex(
+      (parentItem) => parentItem.position < item.position && !parentItem.level
+    );
+    
+    if (parentIndex >= 0) {
+      const subIndex = index - parentIndex;
+      return `${parentIndex + 1}.${subIndex}`;
+    }
+    
+    return `${index + 1}`;
+  };
+
+  // Get the hierarchy level based on item type
+  const getItemLevel = (item: LineItem): number => {
+    switch (item.type) {
+      case "title":
+        return 0; // Premier niveau
+      case "subtitle":
+        return 1; // Sous-niveau
+      default:
+        return 2; // Élément standard
+    }
+  };
+
   // Add a new line item
   const addLineItem = (type: string) => {
     const newItem: LineItem = {
@@ -65,11 +104,13 @@ export function QuoteLineItems({ lineItems, onChange }: QuoteLineItemsProps) {
       title: type === "title" || type === "subtitle" ? "" : null,
       description: type === "text" ? "" : null,
       quantity: type === "material" || type === "labor" || type === "work" ? "1" : null,
-      unit: type === "material" || type === "labor" || type === "work" ? "" : null,
+      unit: type === "material" || type === "labor" || type === "work" ? "u" : null,
       unitPrice: type === "material" || type === "labor" || type === "work" ? "0" : null,
       vatRate: type === "material" || type === "labor" || type === "work" ? "20" : null,
       totalHT: type === "material" || type === "labor" || type === "work" ? "0" : null,
       position: getNextPosition(),
+      details: type === "material" || type === "work" ? [] : undefined,
+      level: type === "subtitle" ? 1 : (type === "title" ? undefined : 2),
     };
     
     const updatedItems = [...lineItems, newItem];
@@ -95,33 +136,75 @@ export function QuoteLineItems({ lineItems, onChange }: QuoteLineItemsProps) {
     }
     
     updatedItems[index] = item;
+    
+    // Recalculate subtotals for all sections
+    recalculateSubtotals(updatedItems);
+    
     onChange(updatedItems);
   };
 
-  // Move a line item up or down
-  const moveLineItem = (index: number, direction: "up" | "down") => {
-    if (
-      (direction === "up" && index === 0) ||
-      (direction === "down" && index === lineItems.length - 1)
-    ) {
-      return;
-    }
+  // Recalculate subtotals for sections and subsections
+  const recalculateSubtotals = (items: LineItem[]) => {
+    // Structure pour suivre les totaux par section
+    const sectionTotals: { [key: string]: number } = {};
+    
+    // Première passe: calculer les totaux pour chaque section
+    items.forEach((item, index) => {
+      if (item.type === "material" || item.type === "labor" || item.type === "work") {
+        // Trouver à quelle section cet élément appartient
+        let sectionIndex = -1;
+        
+        // Remonter pour trouver le titre parent
+        for (let i = index - 1; i >= 0; i--) {
+          if (items[i].type === "title") {
+            sectionIndex = i;
+            break;
+          }
+        }
+        
+        if (sectionIndex >= 0) {
+          const sectionId = `section_${sectionIndex}`;
+          sectionTotals[sectionId] = (sectionTotals[sectionId] || 0) + parseFloat(item.totalHT?.toString() || "0");
+        }
+      }
+    });
+    
+    // Deuxième passe: assigner les sous-totaux
+    items.forEach((item, index) => {
+      if (item.type === "title") {
+        const sectionId = `section_${index}`;
+        item.subtotal = sectionTotals[sectionId] || 0;
+      }
+    });
+  };
 
+  // Add technical details to a line item
+  const addTechnicalDetail = (index: number, detail: string) => {
     const updatedItems = [...lineItems];
-    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    const item = { ...updatedItems[index] };
     
-    // Swap positions
-    const currentPosition = updatedItems[index].position;
-    updatedItems[index].position = updatedItems[targetIndex].position;
-    updatedItems[targetIndex].position = currentPosition;
+    if (!item.details) {
+      item.details = [];
+    }
     
-    // Sort by position
-    updatedItems.sort((a, b) => a.position - b.position);
-    
+    item.details.push(detail);
+    updatedItems[index] = item;
     onChange(updatedItems);
   };
 
-  // Drag and drop functionality
+  // Remove technical detail from a line item
+  const removeTechnicalDetail = (itemIndex: number, detailIndex: number) => {
+    const updatedItems = [...lineItems];
+    const item = { ...updatedItems[itemIndex] };
+    
+    if (item.details && item.details.length > detailIndex) {
+      item.details.splice(detailIndex, 1);
+      updatedItems[itemIndex] = item;
+      onChange(updatedItems);
+    }
+  };
+
+  // Handle drag and drop
   const handleDragStart = (item: LineItem) => {
     setDraggedItem(item);
   };
@@ -147,252 +230,144 @@ export function QuoteLineItems({ lineItems, onChange }: QuoteLineItemsProps) {
     // Sort by position
     updatedItems.sort((a, b) => a.position - b.position);
     
+    // Recalculate subtotals
+    recalculateSubtotals(updatedItems);
+    
     setDraggedItem(null);
     onChange(updatedItems);
   };
 
   return (
     <div className="space-y-4">
-      <Table>
-        <TableHeader>
+      <Table className="border border-slate-200 rounded-md overflow-hidden">
+        <TableHeader className="bg-blue-600 text-white">
           <TableRow>
-            <TableHead style={{ width: "40px" }}></TableHead>
-            <TableHead style={{ width: "120px" }}>Type</TableHead>
-            <TableHead>Description</TableHead>
-            <TableHead style={{ width: "100px" }}>Quantité</TableHead>
-            <TableHead style={{ width: "100px" }}>Unité</TableHead>
-            <TableHead style={{ width: "120px" }}>Prix HT</TableHead>
-            <TableHead style={{ width: "100px" }}>TVA (%)</TableHead>
-            <TableHead style={{ width: "120px" }}>Total HT</TableHead>
-            <TableHead style={{ width: "100px" }}>Actions</TableHead>
+            <TableHead className="text-white font-medium w-12">N°</TableHead>
+            <TableHead className="text-white font-medium">Désignation</TableHead>
+            <TableHead className="text-white font-medium w-16 text-center">Qté</TableHead>
+            <TableHead className="text-white font-medium w-16 text-center">Unité</TableHead>
+            <TableHead className="text-white font-medium w-24 text-center">Prix U. HT</TableHead>
+            <TableHead className="text-white font-medium w-16 text-center">TVA</TableHead>
+            <TableHead className="text-white font-medium w-24 text-right">Total HT</TableHead>
+            <TableHead className="text-white font-medium w-12"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {lineItems.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={9} className="h-24 text-center text-muted-foreground">
+              <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">
                 Aucun élément. Ajoutez votre premier élément ci-dessous.
               </TableCell>
             </TableRow>
           ) : (
-            lineItems.map((item, index) => (
-              <TableRow 
-                key={index}
-                draggable 
-                onDragStart={() => handleDragStart(item)}
-                onDragOver={handleDragOver}
-                onDrop={() => handleDrop(item)}
-                className={draggedItem === item ? "opacity-50" : ""}
-              >
-                <TableCell className="text-center">
-                  <LayoutGrid className="h-4 w-4 text-slate-400 cursor-move" />
-                </TableCell>
-                <TableCell>
-                  <Select
-                    value={item.type}
-                    onValueChange={(value) => updateLineItem(index, "type", value)}
+            lineItems.map((item, index) => {
+              const isTitle = item.type === "title";
+              const isSubtitle = item.type === "subtitle";
+              const isItemWithDetails = item.details && item.details.length > 0;
+              const itemNumber = formatItemNumber(item, index);
+              
+              return (
+                <>
+                  <TableRow 
+                    key={index}
+                    draggable 
+                    onDragStart={() => handleDragStart(item)}
+                    onDragOver={handleDragOver}
+                    onDrop={() => handleDrop(item)}
+                    className={`${draggedItem === item ? "opacity-50" : ""} ${isTitle ? "bg-slate-100 font-medium" : ""}`}
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="title">
-                        <div className="flex items-center">
-                          <Type className="h-4 w-4 mr-2" />
-                          <span>Titre</span>
+                    <TableCell className="font-mono">
+                      <div className="flex items-center">
+                        <GripVertical className="h-4 w-4 text-slate-400 cursor-move mr-2" />
+                        {itemNumber}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {isTitle || isSubtitle ? (
+                        item.title || ""
+                      ) : item.type === "text" ? (
+                        item.description || ""
+                      ) : (
+                        <div>
+                          {item.title || ""}
+                          {item.description && (
+                            <div className="text-sm text-slate-500 mt-1">{item.description}</div>
+                          )}
+                          {isItemWithDetails && (
+                            <div className="text-xs text-slate-500 mt-1 pl-4">
+                              {item.details?.map((detail, detailIndex) => (
+                                <div key={detailIndex} className="flex items-center">
+                                  <CircleDot className="h-2 w-2 mr-1" /> {detail}
+                                </div>
+                              ))}
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="mt-1 text-xs h-6 px-2 py-0"
+                                onClick={() => addTechnicalDetail(index, "Nouveau détail technique")}
+                              >
+                                <Settings className="h-3 w-3 mr-1" />
+                                Configurer les éléments de l'ouvrage
+                              </Button>
+                            </div>
+                          )}
                         </div>
-                      </SelectItem>
-                      <SelectItem value="subtitle">
-                        <div className="flex items-center">
-                          <ListOrdered className="h-4 w-4 mr-2" />
-                          <span>Sous-titre</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="text">
-                        <div className="flex items-center">
-                          <AlignLeft className="h-4 w-4 mr-2" />
-                          <span>Texte</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="material">
-                        <div className="flex items-center">
-                          <PackageOpen className="h-4 w-4 mr-2" />
-                          <span>Matériel</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="labor">
-                        <div className="flex items-center">
-                          <Hammer className="h-4 w-4 mr-2" />
-                          <span>Main d'œuvre</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="work">
-                        <div className="flex items-center">
-                          <LayoutGrid className="h-4 w-4 mr-2" />
-                          <span>Ouvrage</span>
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </TableCell>
-                <TableCell>
-                  {item.type === "title" || item.type === "subtitle" ? (
-                    <Input
-                      value={item.title || ""}
-                      onChange={(e) => updateLineItem(index, "title", e.target.value)}
-                      placeholder={item.type === "title" ? "Titre" : "Sous-titre"}
-                    />
-                  ) : item.type === "text" ? (
-                    <Textarea
-                      value={item.description || ""}
-                      onChange={(e) => updateLineItem(index, "description", e.target.value)}
-                      placeholder="Texte libre"
-                      rows={2}
-                    />
-                  ) : (
-                    <div className="space-y-2">
-                      <Input
-                        value={item.title || ""}
-                        onChange={(e) => updateLineItem(index, "title", e.target.value)}
-                        placeholder="Titre"
-                      />
-                      <Textarea
-                        value={item.description || ""}
-                        onChange={(e) => updateLineItem(index, "description", e.target.value)}
-                        placeholder="Description"
-                        rows={2}
-                      />
-                    </div>
-                  )}
-                </TableCell>
-                <TableCell>
-                  {(item.type === "material" || item.type === "labor" || item.type === "work") && (
-                    <Input
-                      type="number"
-                      value={item.quantity || ""}
-                      onChange={(e) => updateLineItem(index, "quantity", e.target.value)}
-                      placeholder="Qté"
-                      min="0"
-                      step="0.01"
-                    />
-                  )}
-                </TableCell>
-                <TableCell>
-                  {(item.type === "material" || item.type === "labor" || item.type === "work") && (
-                    <Input
-                      value={item.unit || ""}
-                      onChange={(e) => updateLineItem(index, "unit", e.target.value)}
-                      placeholder="Unité"
-                    />
-                  )}
-                </TableCell>
-                <TableCell>
-                  {(item.type === "material" || item.type === "labor" || item.type === "work") && (
-                    <Input
-                      type="number"
-                      value={item.unitPrice || ""}
-                      onChange={(e) => updateLineItem(index, "unitPrice", e.target.value)}
-                      placeholder="Prix unitaire"
-                      min="0"
-                      step="0.01"
-                    />
-                  )}
-                </TableCell>
-                <TableCell>
-                  {(item.type === "material" || item.type === "labor" || item.type === "work") && (
-                    <Input
-                      type="number"
-                      value={item.vatRate || ""}
-                      onChange={(e) => updateLineItem(index, "vatRate", e.target.value)}
-                      placeholder="TVA %"
-                      min="0"
-                      max="100"
-                    />
-                  )}
-                </TableCell>
-                <TableCell>
-                  {(item.type === "material" || item.type === "labor" || item.type === "work") && (
-                    <Input
-                      type="number"
-                      value={item.totalHT || ""}
-                      onChange={(e) => updateLineItem(index, "totalHT", e.target.value)}
-                      placeholder="Total HT"
-                      min="0"
-                      step="0.01"
-                      readOnly
-                    />
-                  )}
-                </TableCell>
-                <TableCell>
-                  <div className="flex space-x-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => moveLineItem(index, "up")}
-                      disabled={index === 0}
-                    >
-                      <ChevronUp className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => moveLineItem(index, "down")}
-                      disabled={index === lineItems.length - 1}
-                    >
-                      <ChevronDown className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeLineItem(index)}
-                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))
+                      )}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {(item.type === "material" || item.type === "labor" || item.type === "work") && (
+                        item.quantity || ""
+                      )}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {(item.type === "material" || item.type === "labor" || item.type === "work") && (
+                        item.unit || ""
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {(item.type === "material" || item.type === "labor" || item.type === "work") && (
+                        formatPrice(item.unitPrice || 0)
+                      )}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {(item.type === "material" || item.type === "labor" || item.type === "work") && (
+                        `${item.vatRate} %`
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right font-medium">
+                      {isTitle && item.subtotal ? (
+                        <>Sous-total : {formatPrice(item.subtotal)}</>
+                      ) : (item.type === "material" || item.type === "labor" || item.type === "work") ? (
+                        formatPrice(item.totalHT || 0)
+                      ) : null}
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeLineItem(index)}
+                        className="h-7 w-7"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                </>
+              );
+            })
           )}
         </TableBody>
       </Table>
 
-      <div className="flex space-x-2">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => addLineItem("title")}
-          className="flex items-center"
-        >
-          <Type className="h-3 w-3 mr-1" />
-          Titre
-        </Button>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => addLineItem("subtitle")}
-          className="flex items-center"
-        >
-          <ListOrdered className="h-3 w-3 mr-1" />
-          Sous-titre
-        </Button>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => addLineItem("text")}
-          className="flex items-center"
-        >
-          <AlignLeft className="h-3 w-3 mr-1" />
-          Texte
-        </Button>
+      <div className="flex flex-wrap gap-2">
         <Button 
           variant="outline" 
           size="sm" 
           onClick={() => addLineItem("material")}
           className="flex items-center"
         >
-          <PackageOpen className="h-3 w-3 mr-1" />
-          Matériel
+          <Plus className="h-3 w-3 mr-1" />
+          Fourniture
         </Button>
         <Button 
           variant="outline" 
@@ -400,7 +375,7 @@ export function QuoteLineItems({ lineItems, onChange }: QuoteLineItemsProps) {
           onClick={() => addLineItem("labor")}
           className="flex items-center"
         >
-          <Hammer className="h-3 w-3 mr-1" />
+          <Plus className="h-3 w-3 mr-1" />
           Main d'œuvre
         </Button>
         <Button 
@@ -409,8 +384,40 @@ export function QuoteLineItems({ lineItems, onChange }: QuoteLineItemsProps) {
           onClick={() => addLineItem("work")}
           className="flex items-center"
         >
-          <LayoutGrid className="h-3 w-3 mr-1" />
+          <Plus className="h-3 w-3 mr-1" />
           Ouvrage
+        </Button>
+        <div className="flex-1"></div>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => addLineItem("title")}
+          className="flex items-center"
+        >
+          Titre
+        </Button>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => addLineItem("subtitle")}
+          className="flex items-center"
+        >
+          Sous-titre
+        </Button>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => addLineItem("text")}
+          className="flex items-center"
+        >
+          Texte
+        </Button>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="flex items-center"
+        >
+          Saut de page
         </Button>
       </div>
     </div>

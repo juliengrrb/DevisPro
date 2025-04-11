@@ -38,7 +38,63 @@ export default function QuoteCreate() {
     totalTTC: "0",
     deposit: "0",
     depositPercent: 30,
-    lineItems: []
+    lineItems: [
+      {
+        type: "title",
+        title: "Salle du restaurant",
+        description: null,
+        quantity: null,
+        unit: null,
+        unitPrice: null,
+        vatRate: null,
+        totalHT: null,
+        position: 1,
+        level: 0,
+        subtotal: "1157.22"
+      },
+      {
+        type: "subtitle",
+        title: "Coin bar",
+        description: null,
+        quantity: null,
+        unit: null,
+        unitPrice: null,
+        vatRate: null,
+        totalHT: null,
+        position: 2,
+        level: 1,
+        subtotal: "1157.22"
+      },
+      {
+        type: "material",
+        title: "Peinture du plafond et tâches associées",
+        description: "Peinture acrylique blanc mat",
+        quantity: "23",
+        unit: "m²",
+        unitPrice: "46",
+        vatRate: "10",
+        totalHT: "1058.00",
+        position: 3,
+        level: 2
+      },
+      {
+        type: "work",
+        title: "Cloisons de séparation",
+        description: "Fourniture et pose",
+        quantity: "8.75",
+        unit: "u",
+        unitPrice: "11.34",
+        vatRate: "20",
+        totalHT: "99.22",
+        position: 4,
+        level: 2,
+        details: [
+          "BA13 standard sur ossature métallique x 1 (m²)",
+          "Rail R90 et double montant M48 x 1 (m²)",
+          "Isolation GR80 x 1 (m²)"
+        ]
+      }
+    ]
   });
 
   // Fetch clients for dropdown
@@ -155,6 +211,32 @@ export default function QuoteCreate() {
           <TabsTrigger value="preview">Aperçu</TabsTrigger>
         </TabsList>
         <TabsContent value="edit" className="w-full">
+          <div className="mb-4">
+            <div className="flex flex-col md:flex-row">
+              <div className="mb-4 md:mb-0 md:mr-4 flex-1">
+                <h2 className="text-xl font-bold text-black mb-2">
+                  Rénovation du restaurant rue Rivoli
+                </h2>
+                <div className="text-xs text-blue-600 mb-2">
+                  <button className="hover:underline flex items-center">
+                    <span>Masquer la description</span>
+                  </button>
+                </div>
+                <div className="text-sm">
+                  <p>Rénovation du restaurant rue Rivoli</p>
+                  <p>(Salle du restaurant et à l'étage)</p>
+                </div>
+              </div>
+              <div className="bg-gray-100 p-4 rounded-md md:w-1/3">
+                <h3 className="font-semibold text-base mb-2">Informations client</h3>
+                <div className="text-sm">
+                  <p className="font-medium">M Jean Lefevre</p>
+                  <p>97 Rue de Rivoli</p>
+                  <p>75001 Paris</p>
+                </div>
+              </div>
+            </div>
+          </div>
           <QuoteForm 
             quote={quoteData} 
             clients={clients || []} 

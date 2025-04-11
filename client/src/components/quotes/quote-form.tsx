@@ -166,15 +166,20 @@ export function QuoteForm({ quote, clients, onChange, isCreating }: QuoteFormPro
 
   // Handle project change
   const handleProjectChange = (projectId: string) => {
-    const id = projectId ? parseInt(projectId) : null;
-    form.setValue("projectId", id);
-    
-    // Find the selected project
-    if (id && projects) {
-      const project = projects.find(p => p.id === id);
-      setSelectedProject(project);
-    } else {
+    // Check if "no_project" is selected
+    if (projectId === "no_project") {
+      form.setValue("projectId", null);
       setSelectedProject(null);
+    } else {
+      // It's a numeric project ID
+      const id = parseInt(projectId);
+      form.setValue("projectId", id);
+      
+      // Find the selected project
+      if (projects) {
+        const project = projects.find(p => p.id === id);
+        setSelectedProject(project);
+      }
     }
     
     // Submit form to update parent
@@ -403,7 +408,7 @@ export function QuoteForm({ quote, clients, onChange, isCreating }: QuoteFormPro
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="">Aucun projet</SelectItem>
+                          <SelectItem value="no_project">Aucun projet</SelectItem>
                           {projects?.map((project) => (
                             <SelectItem key={project.id} value={project.id.toString()}>
                               {project.name}

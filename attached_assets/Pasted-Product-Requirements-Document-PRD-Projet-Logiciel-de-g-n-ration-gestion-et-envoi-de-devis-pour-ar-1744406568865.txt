@@ -1,0 +1,148 @@
+Product Requirements Document (PRD)
+Projet
+Logiciel de génération, gestion et envoi de devis pour artisans et entreprises du BTP
+
+1. Objectifs du projet
+Créer une application complète, intuitive et flexible pour permettre aux artisans et entreprises du bâtiment de générer facilement des devis personnalisés, les gérer, les envoyer à leurs clients et transformer les devis validés en factures rapidement.
+
+2. Public cible
+Artisans indépendants
+
+Petites et moyennes entreprises du secteur du bâtiment
+
+Responsables administratifs et commerciaux des entreprises BTP
+
+3. Fonctionnalités clés
+Création et édition de devis
+Création rapide et intuitive de nouveaux devis
+
+Personnalisation intégrale des informations :
+
+Numéro de devis automatique/modifiable
+
+Dates (création, échéance personnalisable)
+
+Informations client (statut, civilité, coordonnées complètes, notes éventuelles)
+
+Informations chantier (description détaillée, adresse complète)
+
+Personnalisation intégrale du contenu :
+
+Ajout facile de lignes (Fournitures, Main d’œuvre, Ouvrages)
+
+Champs de saisie : quantité, unité, prix HT, TVA applicable
+
+Calcul automatique : sous-totaux, TVA, total HT, total TTC
+
+Ajout d’éléments textuels (titres, sous-titres, textes libres)
+
+Ajout de conditions de paiement (ex : acompte)
+
+Personnalisation graphique poussée
+Ajout et modification du logo (taille, position, alignement)
+
+Choix libre des couleurs dominantes
+
+Personnalisation complète des entêtes et pieds de pages
+
+Personnalisation style du tableau des devis
+
+Prévisualisation et génération PDF
+Aperçu en temps réel du devis finalisé
+
+Génération PDF automatique, claire, prête à imprimer
+
+Envoi simplifié par email
+Interface intégrée d’envoi direct des devis aux clients
+
+Champs email préremplis (modifiable) : adresse du destinataire, sujet, corps de l’email
+
+Pièce jointe automatique du PDF généré
+
+Option copie carbone pour l’expéditeur
+
+Gestion avancée des devis
+Tableau récapitulatif clair de tous les devis créés
+
+Filtres pratiques par statut : Brouillon, Finalisé, Signé, Refusé, Envoyé
+
+Actions rapides : visualiser, modifier, dupliquer, marquer comme signé ou refusé
+
+Création rapide de factures directement depuis les devis validés
+
+Facture d’acompte
+
+Facture intermédiaire (situation)
+
+Facture finale
+
+Gestion clients et chantiers
+Base de données clients intégrée, gestion centralisée des coordonnées
+
+Gestion centralisée des informations chantier : descriptions, adresses, historique lié
+
+4. Exigences Techniques et Non-fonctionnelles
+Interface utilisateur
+Design moderne, clair, ergonomique
+
+Facilité d’utilisation, apprentissage rapide
+
+Accessible depuis ordinateur, tablette, smartphone (responsive design)
+
+Utilisation de composants modernes (type shadcn/ui) pour clarté et cohérence visuelle
+
+Performance et sécurité
+Chargement rapide des pages (<2 secondes)
+
+Sécurité des données personnelles et commerciales (cryptage, RGPD compliant)
+
+Hébergement sécurisé, sauvegardes automatiques régulières des données
+
+Flexibilité et évolutivité
+Système de gestion de contenu simple et évolutif
+
+Structure permettant facilement des ajouts de fonctionnalités futures (ex : gestion des stocks, paiement en ligne)
+
+5. Informations configurables (administrateur)
+Coordonnées complètes de l'entreprise :
+
+Adresse, téléphone, email, site internet
+
+Numéro SIRET, RCS, NAF, inscription registre des métiers, capital social
+
+Type de garanties (décennale, biennale)
+
+TVA et conditions légales spécifiques (mentions obligatoires)
+
+Modification dynamique des éléments graphiques (logo, couleurs, mise en page)
+
+6. Scénarios utilisateurs principaux (User Stories)
+En tant qu'artisan, je souhaite créer rapidement un devis personnalisé afin de l'envoyer facilement à mon client potentiel.
+
+En tant que responsable administratif, je souhaite visualiser et gérer facilement l’ensemble des devis créés, pour optimiser mon suivi commercial.
+
+En tant que responsable d'entreprise BTP, je souhaite personnaliser graphiquement les devis afin de refléter professionnellement mon entreprise.
+
+En tant qu’utilisateur, je souhaite transformer rapidement mes devis acceptés en factures afin de gagner du temps dans ma gestion administrative.
+
+7. Livrables attendus
+Application complète fonctionnelle de création et gestion de devis BTP
+
+Accès sécurisé administrateur pour configuration des paramètres
+
+Code source clair, structuré, documenté
+
+Documentation utilisateur détaillée et accessible
+
+8. Critères d'acceptation
+Possibilité de créer, modifier, supprimer un devis rapidement et intuitivement
+
+Génération précise et rapide de PDF personnalisés
+
+Calculs automatiques corrects (totaux, TVA)
+
+Envoi par email simple et sans erreur
+
+Interface d'administration intuitive pour modifier informations légales et visuelles
+
+Possibilité de gestion centralisée et claire de l'historique des devis

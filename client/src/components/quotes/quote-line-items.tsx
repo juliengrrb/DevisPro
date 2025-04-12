@@ -252,17 +252,17 @@ export function QuoteLineItems({ lineItems, onChange }: QuoteLineItemsProps) {
 
   return (
     <div className="space-y-4">
-      <Table className="border border-slate-200 rounded-md overflow-hidden">
+      <Table className="border-collapse w-full">
         <TableHeader className="bg-blue-600 text-white">
           <TableRow>
-            <TableHead className="text-white font-medium w-12">N°</TableHead>
-            <TableHead className="text-white font-medium">Désignation</TableHead>
-            <TableHead className="text-white font-medium w-16 text-center">Qté</TableHead>
-            <TableHead className="text-white font-medium w-16 text-center">Unité</TableHead>
-            <TableHead className="text-white font-medium w-24 text-center">Prix U. HT</TableHead>
-            <TableHead className="text-white font-medium w-16 text-center">TVA</TableHead>
-            <TableHead className="text-white font-medium w-24 text-right">Total HT</TableHead>
-            <TableHead className="text-white font-medium w-12"></TableHead>
+            <TableHead className="text-white font-medium w-12 py-2 px-3">N°</TableHead>
+            <TableHead className="text-white font-medium py-2 px-3">Désignation</TableHead>
+            <TableHead className="text-white font-medium w-16 text-center py-2 px-3">Qté</TableHead>
+            <TableHead className="text-white font-medium w-16 text-center py-2 px-3">Unité</TableHead>
+            <TableHead className="text-white font-medium w-24 text-center py-2 px-3">Prix U. HT</TableHead>
+            <TableHead className="text-white font-medium w-16 text-center py-2 px-3">TVA</TableHead>
+            <TableHead className="text-white font-medium w-24 text-right py-2 px-3">Total HT</TableHead>
+            <TableHead className="text-white font-medium w-12 py-2 px-3"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -287,7 +287,7 @@ export function QuoteLineItems({ lineItems, onChange }: QuoteLineItemsProps) {
                     onDragStart={() => handleDragStart(item)}
                     onDragOver={handleDragOver}
                     onDrop={() => handleDrop(item)}
-                    className={`${draggedItem === item ? "opacity-50" : ""} ${isTitle ? "bg-slate-100 font-medium" : ""}`}
+                    className={`${draggedItem === item ? "opacity-50" : ""} ${isTitle ? "bg-slate-100 font-medium" : isSubtitle ? "bg-blue-50" : ""}`}
                   >
                     <TableCell className="font-mono">
                       <div className="flex items-center">
@@ -424,12 +424,12 @@ export function QuoteLineItems({ lineItems, onChange }: QuoteLineItemsProps) {
         </TableBody>
       </Table>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 mt-3">
         <Button 
           variant="outline" 
           size="sm" 
           onClick={() => addLineItem("material")}
-          className="flex items-center"
+          className="flex items-center text-xs h-8 px-3 py-1 border-gray-300"
         >
           <Plus className="h-3 w-3 mr-1" />
           Fourniture
@@ -438,7 +438,7 @@ export function QuoteLineItems({ lineItems, onChange }: QuoteLineItemsProps) {
           variant="outline" 
           size="sm" 
           onClick={() => addLineItem("labor")}
-          className="flex items-center"
+          className="flex items-center text-xs h-8 px-3 py-1 border-gray-300"
         >
           <Plus className="h-3 w-3 mr-1" />
           Main d'œuvre
@@ -447,7 +447,7 @@ export function QuoteLineItems({ lineItems, onChange }: QuoteLineItemsProps) {
           variant="outline" 
           size="sm" 
           onClick={() => addLineItem("work")}
-          className="flex items-center"
+          className="flex items-center text-xs h-8 px-3 py-1 border-gray-300"
         >
           <Plus className="h-3 w-3 mr-1" />
           Ouvrage
@@ -457,7 +457,7 @@ export function QuoteLineItems({ lineItems, onChange }: QuoteLineItemsProps) {
           variant="ghost" 
           size="sm" 
           onClick={() => addLineItem("title")}
-          className="flex items-center"
+          className="flex items-center text-xs h-8"
         >
           Titre
         </Button>
@@ -465,7 +465,7 @@ export function QuoteLineItems({ lineItems, onChange }: QuoteLineItemsProps) {
           variant="ghost" 
           size="sm" 
           onClick={() => addLineItem("subtitle")}
-          className="flex items-center"
+          className="flex items-center text-xs h-8"
         >
           Sous-titre
         </Button>
@@ -473,14 +473,14 @@ export function QuoteLineItems({ lineItems, onChange }: QuoteLineItemsProps) {
           variant="ghost" 
           size="sm" 
           onClick={() => addLineItem("text")}
-          className="flex items-center"
+          className="flex items-center text-xs h-8"
         >
           Texte
         </Button>
         <Button 
           variant="ghost" 
           size="sm" 
-          className="flex items-center"
+          className="flex items-center text-xs h-8"
         >
           Saut de page
         </Button>

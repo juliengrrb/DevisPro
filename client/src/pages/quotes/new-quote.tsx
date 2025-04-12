@@ -111,12 +111,13 @@ export default function NewQuote() {
     if (duplicateId) {
       const fetchQuote = async () => {
         try {
-          const data = await apiRequest(`/api/quotes/${duplicateId}`);
+          const data = await apiRequest(`/api/quotes/${duplicateId}`, {
+            method: "GET"
+          });
           if (data) {
             // Clone the quote
             setQuoteData({
               ...data,
-              id: undefined,
               number: generateQuoteNumber(),
               status: "draft",
               issueDate: formatDateInput(new Date()),
@@ -144,15 +145,18 @@ export default function NewQuote() {
     mutationFn: async (data: any) => {
       return await apiRequest("/api/quotes", {
         method: "POST",
-        data,
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json"
+        }
       });
     },
-    onSuccess: (data) => {
+    onSuccess: (response) => {
       toast({
         title: "Succès",
         description: "Devis créé avec succès",
       });
-      navigate(`/quotes/${data.id}`);
+      navigate(`/quotes/${response.id}`);
       queryClient.invalidateQueries({
         queryKey: ["/api/quotes"],
       });

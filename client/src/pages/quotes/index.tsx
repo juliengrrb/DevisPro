@@ -175,12 +175,20 @@ export default function QuotesIndex() {
               <FilterX className="mr-2 h-4 w-4" />
               Filtrer
             </Button>
-            <Button className="flex items-center" asChild>
-              <Link href="/quotes/create">
-                <Plus className="mr-2 h-4 w-4" />
-                Nouveau Devis
-              </Link>
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" className="flex items-center" asChild>
+                <Link href="/quotes/create">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Version classique
+                </Link>
+              </Button>
+              <Button className="flex items-center" asChild>
+                <Link href="/quotes/new">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Nouveau Devis (Pro)
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -199,11 +207,17 @@ export default function QuotesIndex() {
             <p className="mt-1 text-sm text-slate-500">
               Commencez par créer un nouveau devis.
             </p>
-            <div className="mt-6">
-              <Button asChild>
+            <div className="mt-6 flex gap-2 justify-center">
+              <Button variant="outline" asChild>
                 <Link href="/quotes/create">
                   <Plus className="mr-2 h-4 w-4" />
-                  Nouveau Devis
+                  Version classique
+                </Link>
+              </Button>
+              <Button asChild>
+                <Link href="/quotes/new">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Nouveau Devis (Pro)
                 </Link>
               </Button>
             </div>

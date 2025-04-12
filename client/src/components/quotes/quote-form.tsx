@@ -27,6 +27,7 @@ import {
   calculateQuoteTotals, 
   calculateDeposit,
   formatDateInput,
+  formatPrice,
 } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";

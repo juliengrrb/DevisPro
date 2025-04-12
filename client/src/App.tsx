@@ -5,10 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import QuotesIndex from "@/pages/quotes/index";
-import QuoteCreate from "@/pages/quotes/create";
-import NewQuote from "@/pages/quotes/new-quote";
-import QuoteEdit from "@/pages/quotes/edit";
 import QuoteView from "@/pages/quotes/view";
+import QuoteEditor from "@/pages/quotes/new-editor";
 import InvoicesIndex from "@/pages/invoices/index";
 import ClientsIndex from "@/pages/clients/index";
 import ProjectsIndex from "@/pages/projects/index";
@@ -22,9 +20,8 @@ function Router() {
       
       {/* Quotes */}
       <Route path="/quotes" component={QuotesIndex} />
-      <Route path="/quotes/create" component={QuoteCreate} />
-      <Route path="/quotes/new" component={NewQuote} />
-      <Route path="/quotes/edit/:id" component={QuoteEdit} />
+      <Route path="/quotes/create" component={QuoteEditor} />
+      <Route path="/quotes/edit/:id" component={QuoteEditor} />
       <Route path="/quotes/:id" component={QuoteView} />
       
       {/* Invoices */}

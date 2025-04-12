@@ -1,0 +1,431 @@
+# Product Requirements Document (PRD)
+# Projet
+# Logiciel de génération, gestion et envoi de devis pour artisans et entreprises du BTP
+
+## 1. Objectifs du projet
+
+Créer une application complète, intuitive et flexible utilisant les composants Shadcn UI pour permettre aux artisans et entreprises du bâtiment de:
+- Générer facilement des devis personnalisés avec une précision au millimètre
+- Gérer efficacement l'ensemble des devis et clients
+- Envoyer professionnellement les devis aux clients
+- Transformer les devis validés en factures rapidement
+- Suivre l'état d'avancement des projets et la facturation
+
+L'application doit offrir une expérience utilisateur moderne et fluide, tout en garantissant une personnalisation poussée des documents et une gestion complète du cycle commercial.
+
+## 2. Public cible
+
+- **Artisans indépendants** du secteur du bâtiment (plombiers, électriciens, maçons, peintres, etc.)
+- **Petites et moyennes entreprises du BTP** (jusqu'à 50 employés)
+- **Responsables administratifs et commerciaux** des entreprises de construction
+- **Chefs de chantier** ayant besoin de créer des devis sur le terrain
+- **Comptables et gestionnaires** chargés du suivi financier des projets
+
+## 3. Fonctionnalités clés
+
+### Création et édition de devis
+
+#### Création rapide et intuitive de nouveaux devis
+- Interface claire avec bouton "Nouveau devis" bien visible
+- Processus guidé de création en plusieurs étapes logiques
+- Modèles prédéfinis par corps de métier pour démarrage rapide
+- Duplication de devis existants pour gagner du temps
+
+#### Personnalisation intégrale des informations
+- **Numéro de devis** automatique avec format configurable (ex: DEV/AAAAMMM/XXXX)
+- **Dates** avec sélecteurs intuitifs:
+  - Date de création (automatique)
+  - Date de validité (configurable, par défaut +30 jours)
+- **Informations client** complètes:
+  - Sélection dans la base clients ou création à la volée
+  - Civilité (M, Mme, M et Mme) avec sélecteur
+  - Coordonnées complètes (nom, adresse, téléphone, email)
+  - Champs professionnels (SIRET, TVA intracommunautaire)
+  - Zone de notes spécifiques au client
+- **Informations chantier**:
+  - Description détaillée du projet
+  - Adresse complète (si différente de l'adresse client)
+  - Dates prévisionnelles de début et fin de travaux
+  - Conditions d'accès et particularités du chantier
+
+#### Personnalisation intégrale du contenu
+- **Ajout facile de lignes** avec boutons dédiés:
+  - Fournitures (matériaux, équipements)
+  - Main d'œuvre (temps, déplacements)
+  - Ouvrages complets (combinaison de fournitures et main d'œuvre)
+- **Structure hiérarchique** avec:
+  - Titres de sections (ex: "Salle de bain")
+  - Sous-titres (ex: "Plomberie")
+  - Lignes de détail avec indentation visuelle
+- **Champs de saisie complets**:
+  - Désignation détaillée avec formatage texte
+  - Quantité avec précision décimale
+  - Unité personnalisable (m², m, u, h, forfait)
+  - Prix unitaire HT
+  - Taux de TVA sélectionnable (5,5%, 10%, 20%)
+  - Remise applicable (pourcentage ou montant fixe)
+- **Calculs automatiques** en temps réel:
+  - Sous-totaux par section
+  - Total HT
+  - Détail des TVA par taux
+  - Total TTC
+- **Éléments textuels flexibles**:
+  - Ajout de titres et sous-titres pour structurer le devis
+  - Textes libres pour explications détaillées
+  - Sauts de page pour contrôler la mise en page
+- **Conditions de paiement personnalisables**:
+  - Acompte (montant fixe ou pourcentage)
+  - Échéancier de paiement
+  - Modes de paiement acceptés
+  - Pénalités de retard
+
+### Personnalisation graphique poussée
+
+- **Gestion du logo**:
+  - Upload simple par glisser-déposer
+  - Redimensionnement intuitif
+  - Positionnement flexible (gauche, centre, droite)
+- **Personnalisation des couleurs**:
+  - Couleur principale de l'entreprise
+  - Couleurs secondaires pour les accents
+  - Couleurs des en-têtes de tableaux
+  - Palette de couleurs prédéfinies ou sélecteur avancé
+- **En-têtes et pieds de page**:
+  - Texte personnalisable
+  - Inclusion des coordonnées de l'entreprise
+  - Mentions légales obligatoires
+  - Numérotation des pages
+- **Style du tableau des devis**:
+  - Choix de bordures (style, épaisseur, couleur)
+  - Alternance de couleurs pour les lignes
+  - Style des en-têtes de colonnes
+  - Espacement et alignement des cellules
+
+### Prévisualisation et génération PDF
+
+- **Aperçu en temps réel** du devis pendant l'édition
+- **Mode prévisualisation dédié** avec rendu fidèle
+- **Options d'affichage**:
+  - Vue page par page
+  - Défilement continu
+  - Zoom pour vérifier les détails
+- **Génération PDF** haute qualité:
+  - Rendu professionnel et fidèle
+  - Optimisé pour l'impression
+  - Protection optionnelle par mot de passe
+  - Compression optimisée pour l'envoi par email
+
+### Envoi simplifié par email
+
+- **Interface d'envoi intégrée** accessible directement depuis le devis
+- **Champs préremplis** mais modifiables:
+  - Adresse email du client (depuis sa fiche)
+  - Sujet personnalisé incluant le numéro de devis
+  - Corps de message avec modèles personnalisables
+- **Pièce jointe automatique** du PDF généré
+- **Options avancées**:
+  - Copie à l'expéditeur (CC)
+  - Copie cachée (BCC) pour le suivi commercial
+  - Planification d'envoi différé
+  - Demande d'accusé de réception
+- **Suivi des envois**:
+  - Statut d'envoi (envoyé, ouvert, téléchargé)
+  - Historique des communications
+  - Relances automatiques configurables
+
+### Gestion avancée des devis
+
+- **Tableau de bord** récapitulatif avec:
+  - Vue d'ensemble des devis par statut
+  - Graphiques de performance (taux de conversion, montants)
+  - Alertes pour devis en attente ou expirant bientôt
+- **Liste des devis** avec:
+  - Colonnes personnalisables (numéro, client, montant, dates)
+  - Tri multi-critères
+  - Recherche globale et filtres avancés
+- **Filtres par statut** avec code couleur:
+  - Brouillon (en cours de rédaction)
+  - Finalisé (prêt à envoyer)
+  - Envoyé (en attente de réponse)
+  - Signé (accepté par le client)
+  - Refusé (rejeté par le client)
+- **Actions rapides** sur chaque devis:
+  - Visualiser (ouvrir en lecture seule)
+  - Modifier (accéder à l'éditeur)
+  - Dupliquer (créer une copie)
+  - Changer le statut (marquer comme signé/refusé)
+  - Supprimer (avec confirmation)
+- **Conversion en facture** en un clic:
+  - Facture d'acompte (pourcentage ou montant fixe)
+  - Facture intermédiaire (situation de travaux)
+  - Facture finale (solde)
+  - Personnalisation des numéros de facture
+
+### Gestion clients et chantiers
+
+- **Base de données clients complète**:
+  - Fiche détaillée avec toutes les coordonnées
+  - Historique des devis et factures
+  - Notes et commentaires internes
+  - Classification par catégories personnalisables
+- **Gestion des chantiers**:
+  - Adresse et localisation précise
+  - Association à un ou plusieurs clients
+  - Historique des interventions
+  - Photos et documents associés
+  - Suivi d'avancement
+- **Import/export de données**:
+  - Import de clients depuis CSV/Excel
+  - Export des données clients et devis
+  - Synchronisation possible avec d'autres logiciels
+
+## 4. Exigences Techniques et Non-fonctionnelles
+
+### Interface utilisateur
+
+- **Design moderne** utilisant les composants Shadcn UI:
+  - Interface claire et épurée
+  - Composants cohérents et accessibles
+  - Animations subtiles pour une expérience fluide
+- **Ergonomie optimisée**:
+  - Navigation intuitive avec menu principal clair
+  - Raccourcis clavier pour les actions fréquentes
+  - Aide contextuelle et tooltips explicatifs
+  - Apprentissage rapide, même pour utilisateurs peu techniques
+- **Responsive design** complet:
+  - Adaptation automatique à tous les écrans
+  - Version optimisée pour tablettes sur chantier
+  - Version mobile pour consultations rapides
+  - Synchronisation entre appareils
+- **Accessibilité**:
+  - Conformité WCAG 2.1 niveau AA
+  - Support des lecteurs d'écran
+  - Contraste suffisant et taille de texte ajustable
+  - Navigation complète au clavier
+
+### Performance et sécurité
+
+- **Performances optimisées**:
+  - Chargement initial rapide (<2 secondes)
+  - Réactivité immédiate de l'interface
+  - Génération PDF optimisée (<5 secondes pour documents complexes)
+  - Fonctionnement fluide même avec grande base de données
+- **Sécurité renforcée**:
+  - Authentification sécurisée (2FA optionnel)
+  - Chiffrement des données sensibles
+  - Conformité RGPD complète
+  - Journalisation des actions importantes
+- **Fiabilité et sauvegarde**:
+  - Sauvegarde automatique pendant l'édition
+  - Historique des versions des devis
+  - Récupération après incident
+  - Exportation manuelle et automatique des données
+
+### Flexibilité et évolutivité
+
+- **Architecture modulaire** basée sur Shadcn UI:
+  - Composants réutilisables et extensibles
+  - Séparation claire interface/logique métier
+  - API documentée pour extensions futures
+- **Personnalisation avancée**:
+  - Thèmes visuels configurables
+  - Champs personnalisés pour clients et devis
+  - Modèles de documents adaptables
+- **Évolutivité prévue**:
+  - Structure permettant l'ajout de modules (stocks, planning, etc.)
+  - Capacité d'intégration avec d'autres logiciels
+  - Performance maintenue avec volume croissant de données
+
+## 5. Informations configurables (administrateur)
+
+### Informations de l'entreprise
+
+- **Coordonnées complètes**:
+  - Nom commercial et raison sociale
+  - Adresse du siège social
+  - Téléphone, email, site internet
+  - Horaires d'ouverture
+- **Informations légales**:
+  - Numéro SIRET
+  - Numéro RCS et ville d'immatriculation
+  - Code NAF/APE
+  - Numéro d'inscription au registre des métiers
+  - Capital social
+- **Assurances et garanties**:
+  - Assurance décennale (numéro et assureur)
+  - Garantie biennale
+  - Autres assurances professionnelles
+- **Informations fiscales**:
+  - Numéro de TVA intracommunautaire
+  - Régime de TVA applicable
+  - Mentions spécifiques d'exonération
+
+### Paramètres des documents
+
+- **Numérotation**:
+  - Format des numéros de devis (préfixe, séparateurs, compteur)
+  - Format des numéros de factures
+  - Remise à zéro annuelle ou continue
+- **Mentions légales**:
+  - Textes obligatoires sur devis
+  - Conditions générales de vente
+  - Mentions spécifiques au secteur BTP
+- **Paramètres par défaut**:
+  - Durée de validité des devis
+  - Conditions de paiement standard
+  - Taux de TVA par défaut
+  - Taux de pénalités de retard
+
+### Personnalisation visuelle
+
+- **Identité graphique**:
+  - Upload et gestion du logo
+  - Définition des couleurs principales et secondaires
+  - Polices de caractères
+- **Mise en page**:
+  - Modèles de documents (devis, factures)
+  - En-têtes et pieds de page
+  - Disposition des informations
+  - Style des tableaux
+
+### Gestion des utilisateurs
+
+- **Comptes utilisateurs**:
+  - Création et gestion des comptes
+  - Attribution de rôles (administrateur, standard, lecture seule)
+  - Permissions granulaires par fonctionnalité
+- **Préférences utilisateur**:
+  - Personnalisation de l'interface
+  - Raccourcis et favoris
+  - Notifications et alertes
+
+## 6. Scénarios utilisateurs principaux (User Stories)
+
+### Création et envoi de devis
+
+- **En tant qu'artisan**, je souhaite créer rapidement un devis détaillé et professionnel, afin de le proposer à mon client dans les plus brefs délais après ma visite sur site.
+  - Je peux créer un nouveau devis en 3 clics depuis n'importe quel écran
+  - Je peux sélectionner un client existant ou en créer un nouveau à la volée
+  - Je peux ajouter facilement des sections, des ouvrages prédéfinis et des lignes personnalisées
+  - Je peux prévisualiser le rendu final à tout moment
+  - Je peux envoyer directement le devis par email depuis l'application
+
+- **En tant que chef d'entreprise**, je souhaite personnaliser l'apparence de mes devis pour qu'ils reflètent l'identité visuelle de mon entreprise et inspirent confiance à mes clients.
+  - Je peux configurer les couleurs, le logo et la mise en page
+  - Je peux créer plusieurs modèles pour différents types de projets
+  - Je peux définir des en-têtes et pieds de page professionnels
+  - Je peux inclure automatiquement toutes les mentions légales obligatoires
+
+### Gestion et suivi commercial
+
+- **En tant que responsable administratif**, je souhaite avoir une vue d'ensemble claire de tous les devis en cours, afin d'optimiser le suivi commercial et ne manquer aucune opportunité.
+  - Je peux visualiser tous les devis sur un tableau de bord synthétique
+  - Je peux filtrer les devis par statut, client, montant ou date
+  - Je reçois des alertes pour les devis en attente de réponse depuis longtemps
+  - Je peux générer des rapports d'activité commerciale
+
+- **En tant que commercial**, je souhaite accéder rapidement à l'historique des échanges avec un client, afin de personnaliser ma relation et augmenter mes chances de conversion.
+  - Je peux consulter tous les devis précédents d'un client
+  - Je peux voir les taux d'acceptation et montants moyens par client
+  - Je peux accéder aux commentaires et notes internes sur chaque client
+  - Je peux suivre les communications précédentes (emails envoyés)
+
+### Facturation et suivi financier
+
+- **En tant qu'utilisateur**, je souhaite transformer facilement mes devis acceptés en factures, afin de simplifier ma gestion administrative et accélérer le processus de facturation.
+  - Je peux convertir un devis en facture en un clic
+  - Je peux créer des factures d'acompte, intermédiaires ou finales
+  - Je peux personnaliser les conditions de paiement pour chaque facture
+  - Je peux suivre l'état des paiements (en attente, partiel, complet)
+
+- **En tant que comptable**, je souhaite avoir une vision claire de la situation financière des projets, afin d'optimiser la trésorerie et la rentabilité de l'entreprise.
+  - Je peux consulter les montants facturés vs. montants encaissés
+  - Je peux voir les échéances de paiement à venir
+  - Je peux exporter les données financières vers mon logiciel de comptabilité
+  - Je peux générer des rapports de TVA et de chiffre d'affaires
+
+## 7. Livrables attendus
+
+- **Application web complète** de création et gestion de devis pour le secteur BTP:
+  - Interface utilisateur moderne basée sur Shadcn UI
+  - Fonctionnalités complètes de création, édition et suivi de devis
+  - Système de gestion clients et chantiers
+  - Module de facturation intégré
+  - Tableau de bord et rapports
+
+- **Interface d'administration** pour la configuration:
+  - Gestion des informations de l'entreprise
+  - Personnalisation des modèles et de l'apparence
+  - Gestion des utilisateurs et des droits
+  - Configuration des paramètres système
+
+- **Documentation technique**:
+  - Architecture du système
+  - Guide d'installation et de déploiement
+  - API documentée pour intégrations futures
+  - Code source commenté et structuré
+
+- **Documentation utilisateur**:
+  - Guide de prise en main rapide
+  - Manuel utilisateur détaillé avec captures d'écran
+  - Tutoriels vidéo pour les principales fonctionnalités
+  - Base de connaissances pour les questions fréquentes
+
+## 8. Critères d'acceptation
+
+### Fonctionnalités essentielles
+
+- **Création de devis**:
+  - Un utilisateur peut créer un nouveau devis en moins de 30 secondes
+  - Tous les champs obligatoires sont clairement identifiés
+  - La structure hiérarchique (titres, sous-titres, lignes) fonctionne parfaitement
+  - Les calculs automatiques sont précis et instantanés
+
+- **Personnalisation**:
+  - L'utilisateur peut personnaliser l'apparence des devis selon sa charte graphique
+  - Les modèles de documents sont facilement modifiables
+  - Les informations légales sont correctement intégrées
+
+- **Gestion et suivi**:
+  - La liste des devis affiche clairement tous les devis avec leur statut
+  - Les filtres et recherches fonctionnent efficacement
+  - Les actions rapides (dupliquer, modifier, etc.) sont accessibles intuitivement
+
+- **Facturation**:
+  - La conversion devis-facture conserve toutes les informations nécessaires
+  - Les factures d'acompte et de situation sont correctement calculées
+  - Le suivi des paiements est clair et précis
+
+### Exigences techniques
+
+- **Performance**:
+  - L'application se charge en moins de 3 secondes sur une connexion standard
+  - La génération de PDF prend moins de 5 secondes pour un devis complexe
+  - L'interface reste réactive même avec une base de données importante
+
+- **Compatibilité**:
+  - L'application fonctionne parfaitement sur les navigateurs modernes (Chrome, Firefox, Safari, Edge)
+  - L'interface s'adapte correctement aux différentes tailles d'écran
+  - Les documents générés s'impriment correctement sans problème de mise en page
+
+- **Sécurité**:
+  - Les données sensibles sont correctement protégées
+  - L'authentification fonctionne de manière sécurisée
+  - Les sauvegardes sont régulières et fiables
+
+### Expérience utilisateur
+
+- **Facilité d'utilisation**:
+  - Un nouvel utilisateur peut créer son premier devis sans formation spécifique
+  - Les messages d'erreur sont clairs et explicatifs
+  - L'aide contextuelle est disponible pour les fonctionnalités complexes
+
+- **Cohérence visuelle**:
+  - L'interface utilise les composants Shadcn UI de manière cohérente
+  - La navigation est intuitive et logique
+  - Le design est professionnel et moderne
+
+- **Satisfaction utilisateur**:
+  - Les utilisateurs peuvent accomplir leurs tâches principales en un minimum d'étapes
+  - Le système répond aux besoins spécifiques du secteur BTP
+  - Les retours utilisateurs lors des tests sont positifs

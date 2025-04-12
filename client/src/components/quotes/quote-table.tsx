@@ -247,7 +247,7 @@ export function QuoteTable({ lineItems, onChange }: QuoteTableProps) {
             <th className="py-2 px-3 text-center w-24">Prix U. HT</th>
             <th className="py-2 px-3 text-center w-16">TVA</th>
             <th className="py-2 px-3 text-right w-24">Total HT</th>
-            <th className="py-2 px-3 w-12"></th>
+            <th className="py-2 px-3 w-10"></th>
           </tr>
         </thead>
         <tbody>
@@ -271,64 +271,61 @@ export function QuoteTable({ lineItems, onChange }: QuoteTableProps) {
                   onDragOver={handleDragOver}
                   onDrop={() => handleDrop(item)}
                   className={`${draggedItem === item ? "opacity-50" : ""} 
-                    ${isTitle ? "bg-slate-100 font-medium" : isSubtitle ? "bg-blue-50" : ""}`}
+                    ${isTitle ? "bg-blue-100" : isSubtitle ? "bg-blue-50" : ""}`}
                 >
                   <td className="py-2 px-3 font-mono border border-slate-200">
-                    <div className="flex items-center">
-                      <GripVertical className="h-4 w-4 text-slate-400 cursor-move mr-2" />
+                    <div className="flex items-center gap-1">
+                      <GripVertical className="h-4 w-4 text-slate-400 cursor-move" />
                       {itemNumber}
                     </div>
                   </td>
                   <td className="py-2 px-3 border border-slate-200">
                     {isTitle || isSubtitle ? (
-                      <span className="font-medium">{item.title || ""}</span>
+                      <span className={`font-medium ${isTitle ? "text-blue-700" : ""}`}>
+                        {item.title || ""}
+                      </span>
                     ) : item.type === "text" ? (
                       item.description || ""
                     ) : (
                       <div>
-                        {item.title || ""}
+                        <div className="font-medium">{item.title || ""}</div>
                         {item.description && (
-                          <div className="text-sm text-slate-500 mt-1">{item.description}</div>
+                          <div className="text-sm text-slate-600 mt-1">{item.description}</div>
                         )}
                         {(item.type === "material" || item.type === "work") && item.details && item.details.length > 0 && (
-                          <div className="text-xs text-slate-500 mt-1 pl-4">
+                          <div className="text-xs text-slate-600 mt-1">
                             {item.details.map((detail, detailIndex) => (
-                              <div key={detailIndex} className="flex items-start">
-                                <span className="mr-1">-</span> {detail}
+                              <div key={detailIndex} className="flex items-start pl-3 py-0.5">
+                                <span className="mr-1 inline-block">-</span> 
+                                <span className="inline-block">{detail}</span>
                               </div>
                             ))}
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="mt-1 text-xs h-6 px-2 py-0"
+                            <button 
+                              className="text-xs text-blue-500 flex items-center gap-1 mt-1"
                               onClick={() => {
                                 setCurrentItemIndex(index);
                                 setIsConfigDialogOpen(true);
                                 setNewDetailText("");
                               }}
                             >
-                              <Settings className="h-3 w-3 mr-1" />
-                              {item.details && item.details.length > 0 
-                                ? "Configurer les éléments de l'ouvrage" 
-                                : "Ajouter des éléments à l'ouvrage"}
-                            </Button>
+                              <Settings className="h-3 w-3" />
+                              Configurer les éléments de l'ouvrage
+                            </button>
                           </div>
                         )}
                         {(item.type === "material" || item.type === "work") && (!item.details || item.details.length === 0) && (
-                          <div className="text-xs text-slate-500 mt-1 pl-4">
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="mt-1 text-xs h-6 px-2 py-0"
+                          <div className="text-xs text-slate-600 mt-1">
+                            <button 
+                              className="text-xs text-blue-500 flex items-center gap-1"
                               onClick={() => {
                                 setCurrentItemIndex(index);
                                 setIsConfigDialogOpen(true);
                                 setNewDetailText("");
                               }}
                             >
-                              <Settings className="h-3 w-3 mr-1" />
+                              <Settings className="h-3 w-3" />
                               Ajouter des éléments à l'ouvrage
-                            </Button>
+                            </button>
                           </div>
                         )}
                       </div>
@@ -338,31 +335,34 @@ export function QuoteTable({ lineItems, onChange }: QuoteTableProps) {
                     {(item.type === "material" || item.type === "labor" || item.type === "work") && (
                       <Input 
                         type="number"
+                        step="0.01"
                         value={item.quantity?.toString() || ""}
                         onChange={(e) => updateLineItem(index, "quantity", e.target.value)}
-                        className="h-8 w-16 text-center"
+                        className="h-8 w-16 text-center border-gray-300"
                       />
                     )}
                   </td>
                   <td className="py-2 px-3 text-center border border-slate-200">
                     {(item.type === "material" || item.type === "labor" || item.type === "work") && (
-                      <Select
-                        value={item.unit?.toString() || ""}
-                        onValueChange={(value) => updateLineItem(index, "unit", value)}
-                      >
-                        <SelectTrigger className="h-8 w-16">
-                          <SelectValue placeholder="u" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="u">u</SelectItem>
-                          <SelectItem value="m²">m²</SelectItem>
-                          <SelectItem value="m">m</SelectItem>
-                          <SelectItem value="kg">kg</SelectItem>
-                          <SelectItem value="h">h</SelectItem>
-                          <SelectItem value="j">j</SelectItem>
-                          <SelectItem value="forfait">forfait</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <div className="relative">
+                        <Select
+                          value={item.unit?.toString() || ""}
+                          onValueChange={(value) => updateLineItem(index, "unit", value)}
+                        >
+                          <SelectTrigger className="h-8 w-16 border-gray-300">
+                            <SelectValue placeholder="u" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="u">u</SelectItem>
+                            <SelectItem value="m²">m²</SelectItem>
+                            <SelectItem value="m">m</SelectItem>
+                            <SelectItem value="kg">kg</SelectItem>
+                            <SelectItem value="h">h</SelectItem>
+                            <SelectItem value="j">j</SelectItem>
+                            <SelectItem value="forfait">forfait</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     )}
                   </td>
                   <td className="py-2 px-3 text-center border border-slate-200">
@@ -370,9 +370,10 @@ export function QuoteTable({ lineItems, onChange }: QuoteTableProps) {
                       <div className="flex items-center justify-center">
                         <Input 
                           type="number"
+                          step="0.01"
                           value={item.unitPrice?.toString() || ""}
                           onChange={(e) => updateLineItem(index, "unitPrice", e.target.value)}
-                          className="h-8 w-20 text-right"
+                          className="h-8 w-20 text-right border-gray-300"
                         />
                         <span className="ml-1">€</span>
                       </div>
@@ -380,25 +381,27 @@ export function QuoteTable({ lineItems, onChange }: QuoteTableProps) {
                   </td>
                   <td className="py-2 px-3 text-center border border-slate-200">
                     {(item.type === "material" || item.type === "labor" || item.type === "work") && (
-                      <Select
-                        value={item.vatRate?.toString() || ""}
-                        onValueChange={(value) => updateLineItem(index, "vatRate", value)}
-                      >
-                        <SelectTrigger className="h-8 w-16">
-                          <SelectValue placeholder="20 %" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="0">0 %</SelectItem>
-                          <SelectItem value="5.5">5,5 %</SelectItem>
-                          <SelectItem value="10">10 %</SelectItem>
-                          <SelectItem value="20">20 %</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <div className="relative">
+                        <Select
+                          value={item.vatRate?.toString() || ""}
+                          onValueChange={(value) => updateLineItem(index, "vatRate", value)}
+                        >
+                          <SelectTrigger className="h-8 w-16 border-gray-300">
+                            <SelectValue placeholder="20 %" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="0">0 %</SelectItem>
+                            <SelectItem value="5.5">5,5 %</SelectItem>
+                            <SelectItem value="10">10 %</SelectItem>
+                            <SelectItem value="20">20 %</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     )}
                   </td>
                   <td className="py-2 px-3 text-right font-medium border border-slate-200">
                     {isTitle || isSubtitle ? (
-                      <>Sous-total : {formatPrice(item.subtotal || 0)}</>
+                      <span className="text-blue-600">Sous-total : {formatPrice(item.subtotal || 0)}</span>
                     ) : (item.type === "material" || item.type === "labor" || item.type === "work") ? (
                       formatPrice(item.totalHT || 0)
                     ) : null}
@@ -408,9 +411,9 @@ export function QuoteTable({ lineItems, onChange }: QuoteTableProps) {
                       variant="ghost"
                       size="icon"
                       onClick={() => removeLineItem(index)}
-                      className="h-7 w-7"
+                      className="h-7 w-7 p-0"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-4 w-4 text-gray-500 hover:text-red-500" />
                     </Button>
                   </td>
                 </tr>

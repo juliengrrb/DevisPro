@@ -1,0 +1,149 @@
+# Analyse approfondie des fonctionnalités d'Obat observées dans la vidéo
+
+## Interface principale
+
+### Barre de navigation
+- Positionnement en haut de l'écran avec fond bleu distinctif
+- Logo Obat à gauche
+- Menu principal avec onglets: Tableau de bord, Chantiers, Devis, Factures, Contacts, Bibliothèque
+- Bouton "+" pour actions rapides
+- Menu utilisateur "Mon compte" à droite
+
+### Liste des devis
+- Filtres horizontaux: Tous, Brouillons, Finalisés, Envoyés, Signés, Refusés
+- Barre de recherche en haut à droite
+- Bouton "Nouveau devis" bleu bien visible
+- Tableau avec colonnes: Numéro, Statut (avec indicateur coloré), Client, Date, Échéance, Total TTC
+- Actions rapides accessibles via icônes à droite de chaque ligne
+- Pagination en bas avec indication "1 à 7 sur 7 éléments"
+
+## Création et édition de devis
+
+### En-tête de l'éditeur
+- Titre "Nouveau devis" en haut à gauche
+- Boutons d'action en haut à droite: Édition, Prévisualisation, Options, Annuler, Enregistrer, Finaliser et envoyer
+- Bouton de fermeture "X" à l'extrême droite
+
+### Informations générales
+- Numéro de devis automatique au format DEV/AAAAMMM/XXXX (ex: DEV/201907/0045)
+- Date de création automatique (format JJ/MM/AAAA)
+- Date de validité avec calendrier intégré
+- Sélecteurs pour client et chantier avec menus déroulants et recherche
+- Zone de description du devis avec formatage texte
+
+### Structure du devis
+- Organisation hiérarchique avec numérotation automatique (1, 1.1, 1.1.1)
+- Titres principaux sur fond bleu clair (ex: "Salle du restaurant")
+- Sous-titres sur fond gris clair (ex: "Coin bar")
+- Lignes de détail avec indentation visuelle
+- Boutons pour ajouter: Fourniture, Main d'œuvre, Ouvrage, Titre, Sous-titre, Texte, Saut de page
+
+### Colonnes du tableau de devis
+- N° (numérotation automatique)
+- Désignation (texte descriptif)
+- Qté (quantité numérique)
+- Unité (m², m, u, h, forfait)
+- Prix U. HT (prix unitaire hors taxes)
+- TVA (taux sélectionnable: 10%, 20%)
+- Total HT (calculé automatiquement)
+
+### Détails des lignes
+- Possibilité d'ajouter des détails techniques sous forme de liste (ex: BA13 standard, Rail R90, Isolation GR80)
+- Bouton "Configurer les éléments de l'ouvrage" pour les ouvrages complexes
+- Champs numériques avec validation (quantités, prix)
+- Calcul automatique des totaux en temps réel
+
+### Conditions de paiement
+- Section dédiée en bas du devis
+- Acompte configurable (pourcentage ou montant fixe)
+- Méthodes de paiement acceptées (Chèque, Virement bancaire, Carte bancaire)
+- Zone pour notes de bas de page
+
+### Totaux et calculs
+- Récapitulatif à droite avec:
+  - Total net HT
+  - Détail des TVA par taux (10%, 20%)
+  - Total TTC
+- Remise globale configurable (pourcentage ou montant fixe)
+- Mise à jour instantanée lors des modifications
+
+## Gestion des clients
+
+### Formulaire client
+- Civilité avec options: M, Mme, M et Mme
+- Champs pour nom et prénom
+- Adresse complète: rue, complément, code postal, ville, pays
+- Contacts: email, téléphone
+- Zone de notes
+- Boutons: Annuler, Mettre à jour
+
+### Affichage client dans le devis
+- Bloc client en haut à droite du devis
+- Format structuré: Civilité Prénom Nom, Adresse, Code postal Ville
+- Lien visuel entre client et chantier
+
+## Configuration des documents
+
+### Interface de configuration
+- Menu latéral gauche avec sections: Mes documents, Visuels, Entreprise, Labels, Entêtes, Pieds de pages, Devis, Factures
+- Aperçu du document à droite
+- Structure détaillée du devis avec tous les éléments et prix
+- Zone de signature client avec mention "Bon pour accord"
+- Informations légales de l'entreprise en pied de page
+
+### Personnalisation visuelle
+- Possibilité de modifier les couleurs des sections
+- Gestion des marges et espacements
+- Configuration des en-têtes et pieds de page
+- Positionnement du logo
+
+## Facturation
+
+### Création de facture de situation
+- Interface dédiée pour transformer un devis en facture
+- Montant total du devis affiché
+- Options pour acompte et situation avec numéros automatiques
+- Calcul automatique des montants restants à facturer
+- Pourcentage ou montant fixe configurable
+
+### Gestion des factures
+- Liste des factures avec statuts visuels
+- Numérotation automatique des factures
+- Lien avec le devis d'origine
+- Suivi des paiements
+
+## Éléments d'interface notables
+
+### Composants interactifs
+- Menus déroulants avec recherche intégrée
+- Sélecteurs de date avec calendrier
+- Boutons d'action avec icônes explicites
+- Champs numériques avec validation
+- Indicateurs visuels de statut (vert pour signé, orange pour en attente)
+
+### Mise en page
+- Design épuré avec espacement généreux
+- Utilisation cohérente des couleurs (bleu principal, gris pour sections secondaires)
+- Hiérarchie visuelle claire
+- Alignement précis des éléments
+- Responsive design adapté aux différentes tailles d'écran
+
+### Fonctionnalités d'aide
+- Tooltips explicatifs sur certains champs
+- Messages de confirmation pour actions importantes
+- Sauvegarde automatique visible
+- Indicateurs de chargement lors des opérations longues
+
+## Workflow observé
+
+1. Accès à la liste des devis depuis le menu principal
+2. Création d'un nouveau devis via le bouton dédié
+3. Sélection ou création du client
+4. Ajout des informations de base (dates, description)
+5. Structuration du devis avec titres et sous-titres
+6. Ajout des lignes détaillées (fournitures, main d'œuvre, ouvrages)
+7. Configuration des conditions de paiement
+8. Prévisualisation du devis
+9. Finalisation et envoi ou enregistrement comme brouillon
+10. Suivi du statut dans la liste des devis
+11. Conversion en facture après acceptation

@@ -11,7 +11,17 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { generateQuoteNumber, formatDateInput, formatPrice } from "@/lib/utils";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Pencil, Info } from "lucide-react";
+import { 
+  Pencil, 
+  Info, 
+  ChevronDown, 
+  Settings, 
+  Trash2,
+  X,
+  Mail,
+  Download,
+  Copy
+} from "lucide-react";
 
 export default function NewQuote() {
   const [, navigate] = useLocation();
@@ -111,9 +121,10 @@ export default function NewQuote() {
     if (duplicateId) {
       const fetchQuote = async () => {
         try {
-          const data = await apiRequest(`/api/quotes/${duplicateId}`, {
-            method: "GET"
-          });
+          const response = await fetch(`/api/quotes/${duplicateId}`);
+          if (!response.ok) throw new Error('Erreur lors de la récupération du devis');
+          
+          const data = await response.json();
           if (data) {
             // Clone the quote
             setQuoteData({
@@ -143,20 +154,26 @@ export default function NewQuote() {
   // Create quote mutation
   const createQuoteMutation = useMutation({
     mutationFn: async (data: any) => {
-      return await apiRequest("/api/quotes", {
+      const response = await fetch("/api/quotes", {
         method: "POST",
         body: JSON.stringify(data),
         headers: {
           "Content-Type": "application/json"
         }
       });
+      
+      if (!response.ok) {
+        throw new Error('Erreur lors de la création du devis');
+      }
+      
+      return await response.json();
     },
-    onSuccess: (response) => {
+    onSuccess: (data) => {
       toast({
         title: "Succès",
         description: "Devis créé avec succès",
       });
-      navigate(`/quotes/${response.id}`);
+      navigate(`/quotes/${data.id}`);
       queryClient.invalidateQueries({
         queryKey: ["/api/quotes"],
       });
@@ -257,18 +274,17 @@ export default function NewQuote() {
 
   return (
     <DashboardLayout>
-      <div className="mb-4">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">Nouveau devis</h1>
-            <p className="mt-1 text-sm text-slate-600">
-              Créez un nouveau devis pour un client
-            </p>
+      <div className="bg-white shadow-sm border-b border-gray-200 px-4 py-2 mb-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <h1 className="text-xl font-semibold text-gray-900 mr-6">Créer un devis</h1>
+            <p className="text-sm text-gray-600">Créez un nouveau devis pour un client</p>
           </div>
-          <div className="mt-4 md:mt-0 flex gap-2">
+          <div className="flex gap-2">
             <Button 
               variant="outline" 
               onClick={() => navigate("/quotes")}
+              className="text-sm h-9 px-3"
             >
               Annuler
             </Button>
@@ -276,239 +292,254 @@ export default function NewQuote() {
               variant="outline" 
               onClick={() => handleCreateQuote()}
               disabled={createQuoteMutation.isPending}
+              className="text-sm h-9 px-3"
             >
               Enregistrer en brouillon
             </Button>
             <Button 
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-green-600 hover:bg-green-700 text-sm h-9 px-3"
               onClick={() => handleCreateQuote("sent")}
               disabled={createQuoteMutation.isPending}
             >
-              Finaliser et envoyer
+              Finaliser le devis
             </Button>
           </div>
         </div>
       </div>
-
-      <div className="bg-white rounded-sm mb-4">
+      
+      <div className="bg-white shadow-sm mb-4">
         <div className="flex border-b border-gray-200">
           <button 
-            className={`px-4 py-2 flex items-center text-sm font-medium ${activeView === 'edition' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}
+            className={`px-4 py-2 flex items-center text-sm font-medium ${activeView === 'edition' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600'}`}
             onClick={() => setActiveView('edition')}
           >
             <Pencil className="w-4 h-4 mr-2" />
             Édition
           </button>
           <button 
-            className={`px-4 py-2 flex items-center text-sm font-medium ${activeView === 'preview' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}
+            className={`px-4 py-2 flex items-center text-sm font-medium ${activeView === 'preview' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600'}`}
             onClick={() => setActiveView('preview')}
           >
             <Info className="w-4 h-4 mr-2" />
             Prévisualisation
+          </button>
+          <div className="flex-1"></div>
+          <button className="px-4 py-2 flex items-center text-sm font-medium text-gray-600">
+            <Settings className="w-4 h-4 mr-2" />
+            Options
+            <ChevronDown className="w-4 h-4 ml-1" />
           </button>
         </div>
       </div>
 
       {activeView === 'edition' ? (
         <div>
-          <div className="py-3 px-4 bg-white rounded-sm mb-4">
-            <div className="mb-2">
-              <h2 className="font-bold text-gray-900">
-                Rénovation du restaurant rue Rivoli
-              </h2>
-              <p className="text-sm text-gray-500">(Salle du restaurant et à l'étage)</p>
-            </div>
+          <div className="px-4 py-3 bg-white shadow-sm mb-4">
+            <h2 className="font-semibold text-lg text-gray-900 mb-1">
+              Rénovation du restaurant rue Rivoli
+            </h2>
+            <p className="text-sm text-gray-600">(Salle du restaurant et à l'étage)</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            {/* Informations du devis */}
-            <div className="bg-white rounded-sm p-4">
-              <h3 className="font-medium text-gray-900 mb-4">Informations du devis</h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Numéro du devis
-                  </label>
-                  <Input 
-                    value={quoteData.number}
-                    onChange={(e) => handleFormChange("number", e.target.value)}
-                  />
-                </div>
+          <div className="flex flex-row gap-4 mb-6">
+            {/* Colonne gauche : Informations du devis */}
+            <div className="w-1/3 space-y-4">
+              <div className="bg-white shadow-sm p-4">
+                <h3 className="font-medium text-gray-900 mb-3">Informations du devis</h3>
                 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Date d'émission
-                  </label>
-                  <Input 
-                    type="date"
-                    value={quoteData.issueDate}
-                    onChange={(e) => handleFormChange("issueDate", e.target.value)}
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Date de validité
-                  </label>
-                  <Input 
-                    type="date"
-                    value={quoteData.validUntil}
-                    onChange={(e) => handleFormChange("validUntil", e.target.value)}
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Acompte (%)
-                  </label>
-                  <select 
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    value={quoteData.depositPercent}
-                    onChange={(e) => handleFormChange("depositPercent", parseInt(e.target.value))}
-                  >
-                    <option value="0">Pas d'acompte</option>
-                    <option value="10">10%</option>
-                    <option value="20">20%</option>
-                    <option value="30">30%</option>
-                    <option value="40">40%</option>
-                    <option value="50">50%</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Notes
-                  </label>
-                  <Textarea
-                    rows={3}
-                    value={quoteData.notes}
-                    onChange={(e) => handleFormChange("notes", e.target.value)}
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Conditions de paiement
-                  </label>
-                  <Textarea
-                    rows={4}
-                    value={quoteData.conditions}
-                    onChange={(e) => handleFormChange("conditions", e.target.value)}
-                  />
-                </div>
-              </div>
-            </div>
-            
-            {/* Client & Projet */}
-            <div className="bg-white rounded-sm p-4">
-              <h3 className="font-medium text-gray-900 mb-4">Client & Projet</h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Client
-                  </label>
-                  <select 
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    value={quoteData.clientId || ""}
-                    onChange={(e) => handleFormChange("clientId", parseInt(e.target.value))}
-                  >
-                    <option value="">Sélectionner un client</option>
-                    {clients && clients.map((client: any) => (
-                      <option key={client.id} value={client.id}>
-                        {client.type === "company" 
-                          ? client.companyName 
-                          : `${client.firstName} ${client.lastName}`}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Projet / Chantier
-                  </label>
-                  <select 
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    value={quoteData.projectId || ""}
-                    onChange={(e) => handleFormChange("projectId", parseInt(e.target.value))}
-                  >
-                    <option value="">Aucun projet</option>
-                    {/* Projects would be loaded here */}
-                  </select>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Optionnel - Associez ce devis à un projet
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Récapitulatif */}
-            <div className="bg-white rounded-sm p-4">
-              <h3 className="font-medium text-gray-900 mb-4">Récapitulatif</h3>
-              
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Total HT:</span>
-                  <span className="font-medium">{formatPrice(parseFloat(quoteData.totalHT))}</span>
-                </div>
-                
-                {showRemise && (
+                <div className="space-y-3">
                   <div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-600">Remise globale:</span>
-                      <div className="flex items-center">
-                        <Input 
-                          type="number"
-                          value={remisePercent}
-                          onChange={(e) => handleRemiseChange(e.target.value)}
-                          className="w-16 h-8 text-right mr-1"
-                        />
-                        <span>%</span>
-                      </div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Numéro du devis
+                    </label>
+                    <Input 
+                      value={quoteData.number}
+                      onChange={(e) => handleFormChange("number", e.target.value)}
+                      className="border-gray-300"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Date d'émission
+                    </label>
+                    <Input 
+                      type="date"
+                      value={quoteData.issueDate}
+                      onChange={(e) => handleFormChange("issueDate", e.target.value)}
+                      className="border-gray-300"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Date de validité
+                    </label>
+                    <Input 
+                      type="date"
+                      value={quoteData.validUntil}
+                      onChange={(e) => handleFormChange("validUntil", e.target.value)}
+                      className="border-gray-300"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Acompte (%)
+                    </label>
+                    <select 
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                      value={quoteData.depositPercent}
+                      onChange={(e) => handleFormChange("depositPercent", parseInt(e.target.value))}
+                    >
+                      <option value="0">Pas d'acompte</option>
+                      <option value="10">10%</option>
+                      <option value="20">20%</option>
+                      <option value="30">30%</option>
+                      <option value="40">40%</option>
+                      <option value="50">50%</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Conditions de paiement
+                    </label>
+                    <Textarea
+                      rows={4}
+                      value={quoteData.conditions}
+                      onChange={(e) => handleFormChange("conditions", e.target.value)}
+                      className="border-gray-300 text-sm"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Colonne milieu : Client & Projet */}
+            <div className="w-1/3">
+              <div className="bg-white shadow-sm p-4 h-full">
+                <h3 className="font-medium text-gray-900 mb-3">Client & Projet</h3>
+                
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Client
+                    </label>
+                    <div className="relative">
+                      <select 
+                        className="w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md text-sm appearance-none"
+                        value={quoteData.clientId || ""}
+                        onChange={(e) => handleFormChange("clientId", parseInt(e.target.value))}
+                      >
+                        <option value="">Sélectionner un client</option>
+                        {clients && clients.map((client: any) => (
+                          <option key={client.id} value={client.id}>
+                            {client.type === "company" 
+                              ? client.companyName 
+                              : `${client.firstName} ${client.lastName}`}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="h-4 w-4 absolute right-3 top-2.5 text-gray-500 pointer-events-none" />
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Remise HT:</span>
-                      <span>{formatPrice(parseFloat(quoteData.totalHT) * (parseFloat(remisePercent) / 100))}</span>
+                    <div className="text-red-500 text-xs mt-1">
+                      Veuillez sélectionner un client
                     </div>
                   </div>
-                )}
-                
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Total net HT:</span>
-                  <span className="font-medium">{formatPrice(parseFloat(quoteData.totalHT))}</span>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Projet / Chantier
+                    </label>
+                    <div className="relative">
+                      <select 
+                        className="w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md text-sm appearance-none"
+                        value={quoteData.projectId || ""}
+                        onChange={(e) => handleFormChange("projectId", parseInt(e.target.value))}
+                        disabled={!quoteData.clientId}
+                      >
+                        <option value="">Sélectionnez d'abord un client</option>
+                      </select>
+                      <ChevronDown className="h-4 w-4 absolute right-3 top-2.5 text-gray-500 pointer-events-none" />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Optionnel - Associez ce devis à un projet
+                    </p>
+                  </div>
                 </div>
+              </div>
+            </div>
+            
+            {/* Colonne droite : Récapitulatif */}
+            <div className="w-1/3">
+              <div className="bg-white shadow-sm p-4 h-full">
+                <h3 className="font-medium text-gray-900 mb-3">Récapitulatif</h3>
                 
-                <div className="flex justify-between">
-                  <span className="text-gray-600">TVA 10%:</span>
-                  <span>{formatPrice(parseFloat(quoteData.totalTVA) * 0.5)}</span>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Total HT:</span>
+                    <span className="font-medium">{formatPrice(parseFloat(quoteData.totalHT))}</span>
+                  </div>
+                  
+                  {showRemise && (
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-gray-600">Remise globale:</span>
+                        <div className="flex items-center">
+                          <Input 
+                            type="number"
+                            value={remisePercent}
+                            onChange={(e) => handleRemiseChange(e.target.value)}
+                            className="w-20 h-8 text-right mr-1 border-gray-300"
+                          />
+                          <span className="mr-1">%</span>
+                        </div>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Remise HT:</span>
+                        <span>{formatPrice(parseFloat(quoteData.totalHT) * (parseFloat(remisePercent) / 100))}</span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Total net HT:</span>
+                    <span className="font-medium">{formatPrice(parseFloat(quoteData.totalHT))}</span>
+                  </div>
+                  
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">TVA 10%:</span>
+                    <span>{formatPrice(parseFloat(quoteData.totalTVA) * 0.5)}</span>
+                  </div>
+                  
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">TVA 20%:</span>
+                    <span>{formatPrice(parseFloat(quoteData.totalTVA) * 0.5)}</span>
+                  </div>
+                  
+                  <div className="pt-2 border-t mt-2">
+                    <div className="flex justify-between font-medium text-lg">
+                      <span>Total TTC:</span>
+                      <span>{formatPrice(parseFloat(quoteData.totalTTC))}</span>
+                    </div>
+                  </div>
+                  
+                  {!showRemise && (
+                    <button 
+                      className="text-xs text-blue-500 flex items-center justify-end w-full mt-2"
+                      onClick={() => setShowRemise(true)}
+                    >
+                      <span className="mr-1">+</span> Ajouter une remise
+                    </button>
+                  )}
                 </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-gray-600">TVA 20%:</span>
-                  <span>{formatPrice(parseFloat(quoteData.totalTVA) * 0.5)}</span>
-                </div>
-                
-                <div className="flex justify-between font-medium text-lg">
-                  <span>Total TTC:</span>
-                  <span>{formatPrice(parseFloat(quoteData.totalTTC))}</span>
-                </div>
-                
-                {!showRemise && (
-                  <button 
-                    className="text-xs text-blue-500 flex items-center justify-end w-full mt-2"
-                    onClick={() => setShowRemise(true)}
-                  >
-                    Ajouter une remise
-                  </button>
-                )}
               </div>
             </div>
           </div>
           
           {/* Contenu du devis */}
-          <div className="bg-white rounded-sm p-4 mb-6">
+          <div className="bg-white shadow-sm p-4 mb-6">
             <h3 className="font-medium text-gray-900 mb-4">Contenu du devis</h3>
             
             <QuoteTable 
@@ -518,7 +549,7 @@ export default function NewQuote() {
           </div>
           
           {/* Conditions de paiement */}
-          <div className="bg-white rounded-sm p-4 mb-6">
+          <div className="bg-white shadow-sm p-4 mb-6">
             <h3 className="font-medium text-gray-900 mb-4">Conditions de paiement</h3>
             
             <p className="mb-2">
@@ -530,13 +561,13 @@ export default function NewQuote() {
           </div>
           
           {/* Notes de bas de page */}
-          <div className="bg-white rounded-sm p-4 mb-6">
+          <div className="bg-white shadow-sm p-4 mb-6">
             <h3 className="font-medium text-gray-900 mb-4">Notes de bas de page</h3>
             
             <Textarea
               rows={4}
               placeholder="Ajoutez des notes qui apparaîtront en bas du devis..."
-              className="w-full"
+              className="w-full border-gray-300"
               value={quoteData.notes}
               onChange={(e) => handleFormChange("notes", e.target.value)}
             />

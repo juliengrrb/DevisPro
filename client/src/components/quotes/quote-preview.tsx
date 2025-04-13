@@ -4,17 +4,20 @@ import { BadgeStatus } from "@/components/ui/badge-status";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { EditSectionButton } from "./edit-section-button";
+import { QuoteNumberFormat } from "./quote-number-modal";
 
 interface QuotePreviewProps {
   quote: any;
   editable?: boolean;
-  onEditSection?: (section: "info" | "client" | "project" | "conditions" | "notes" | "lineItems") => void;
+  onEditSection?: (section: "info" | "client" | "project" | "conditions" | "notes" | "lineItems" | "numberFormat") => void;
+  onNumberFormatChange?: (format: QuoteNumberFormat) => void;
 }
 
 export function QuotePreview({ 
   quote, 
   editable = false, 
-  onEditSection 
+  onEditSection,
+  onNumberFormatChange
 }: QuotePreviewProps) {
   const handleDownloadPdf = () => {
     if (!quote.id) return; // Can't download if the quote doesn't exist yet
@@ -54,15 +57,34 @@ export function QuotePreview({
         <CardContent className="p-6 md:p-8">
           {/* Header */}
           <div className="flex flex-col md:flex-row justify-between mb-8 gap-4 relative">
-            {editable && onEditSection && (
-              <EditSectionButton onClick={() => onEditSection("info")} />
-            )}
             <div>
-              <h2 className="text-2xl font-bold text-slate-900">DEVIS {quote.number}</h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg font-medium text-slate-900">Devis n°{quote.number} <span className="text-slate-400 text-sm">{editable ? "✎" : ""}</span></h2>
+                {editable && onEditSection && (
+                  <Button 
+                    variant="secondary" 
+                    size="sm" 
+                    className="ml-2 text-xs"
+                    onClick={() => onEditSection("numberFormat")}
+                  >
+                    Modifier la numérotation
+                  </Button>
+                )}
+              </div>
               <div className="mt-2 text-slate-600">
-                <p>Date d'émission: {formatDate(quote.issueDate)}</p>
+                <p>En date du {formatDate(quote.issueDate)}</p>
                 {quote.validUntil && (
-                  <p>Valide jusqu'au: {formatDate(quote.validUntil)}</p>
+                  <p>Valable jusqu'au {formatDate(quote.validUntil)}</p>
+                )}
+                {editable && onEditSection && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="mt-2 text-primary-500 hover:text-primary-600 px-0 h-auto underline"
+                    onClick={() => onEditSection("info")}
+                  >
+                    <span className="text-xs">+ Ajouter une description</span>
+                  </Button>
                 )}
                 {quote.status && (
                   <div className="mt-2">

@@ -4,6 +4,7 @@ import { DashboardLayout } from "@/layouts/dashboard-layout";
 import { QuotePreview } from "@/components/quotes/quote-preview";
 import { QuoteEditModal } from "@/components/quotes/quote-edit-modal";
 import { LineItemsModal } from "@/components/quotes/line-items-modal";
+import { QuoteNumberModal, QuoteNumberFormat } from "@/components/quotes/quote-number-modal";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation, useRoute, useSearch } from "wouter";
@@ -26,7 +27,7 @@ export default function QuoteEditor() {
   const isNewQuote = !quoteId; // This is a new quote if there's no ID
   
   // State for modals
-  const [activeModal, setActiveModal] = useState<"info" | "client" | "project" | "conditions" | "notes" | "lineItems" | null>(null);
+  const [activeModal, setActiveModal] = useState<"info" | "client" | "project" | "conditions" | "notes" | "lineItems" | "numberFormat" | null>(null);
   const [isLoading, setIsLoading] = useState(!!quoteId || !!duplicateId);
   
   // Fetch quote if editing an existing one
@@ -160,7 +161,7 @@ export default function QuoteEditor() {
   }, [existingQuote, duplicatedQuote, quoteId, duplicateId, clientId]);
 
   // Handle section edit
-  const handleEditSection = (section: "info" | "client" | "project" | "conditions" | "notes" | "lineItems") => {
+  const handleEditSection = (section: "info" | "client" | "project" | "conditions" | "notes" | "lineItems" | "numberFormat") => {
     setActiveModal(section);
   };
 

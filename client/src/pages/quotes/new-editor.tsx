@@ -213,6 +213,10 @@ export default function QuoteEditor() {
       const deposit = calculateDeposit(totalTTC, updatedData.depositPercent || 0);
       updatedData.deposit = deposit.toString();
     }
+    else if (section === "numberFormat") {
+      // Update quote number from the number format modal
+      updatedData.number = data.formattedNumber;
+    }
     
     setQuoteData(updatedData);
   };
@@ -342,6 +346,7 @@ export default function QuoteEditor() {
           quote={formatQuoteForPreview()} 
           editable={true}
           onEditSection={handleEditSection}
+          onNumberFormatChange={(format) => handleQuoteDataChange("numberFormat", format)}
         />
       </div>
       
@@ -398,6 +403,13 @@ export default function QuoteEditor() {
         onOpenChange={(open) => setActiveModal(open ? "lineItems" : null)}
         lineItems={quoteData.lineItems || []}
         onSave={(lineItems) => handleQuoteDataChange("lineItems", lineItems)}
+      />
+      
+      <QuoteNumberModal
+        open={activeModal === "numberFormat"}
+        onOpenChange={(open) => setActiveModal(open ? "numberFormat" : null)}
+        currentNumber={quoteData.number}
+        onSave={(format) => handleQuoteDataChange("numberFormat", format)}
       />
     </DashboardLayout>
   );

@@ -1,6 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { formatPrice, formatDate } from "@/lib/utils";
-import { BadgeStatus } from "@/components/ui/badge-status";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { EditSectionButton } from "./edit-section-button";
@@ -56,43 +55,28 @@ export function QuotePreview({
       <Card className="shadow-sm">
         <CardContent className="p-6 md:p-8">
           {/* Header */}
-          <div className="flex flex-col md:flex-row justify-between mb-8 gap-4 relative">
+          <div className="flex flex-col md:flex-row justify-between mb-8 gap-4">
             <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-lg font-medium text-slate-900">Devis n°{quote.number} <span className="text-slate-400 text-sm">{editable ? "✎" : ""}</span></h2>
+              <div className="flex items-center gap-1">
+                <h2 className="text-base font-normal text-slate-900">Devis n°<span className="font-semibold">{quote.number}</span></h2>
                 {editable && onEditSection && (
-                  <Button 
-                    variant="secondary" 
-                    size="sm" 
-                    className="ml-2 text-xs"
+                  <button 
+                    className="text-slate-400 hover:text-slate-600 transition-colors"
                     onClick={() => onEditSection("numberFormat")}
+                    title="Modifier la numérotation"
                   >
-                    Modifier la numérotation
-                  </Button>
+                    <span className="text-sm">✎</span>
+                  </button>
                 )}
               </div>
-              <div className="mt-2 text-slate-600">
+              <div className="mt-2 text-slate-600 text-sm">
                 <p>En date du {formatDate(quote.issueDate)}</p>
                 {quote.validUntil && (
                   <p>Valable jusqu'au {formatDate(quote.validUntil)}</p>
                 )}
-                {editable && onEditSection && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="mt-2 text-primary-500 hover:text-primary-600 px-0 h-auto underline"
-                    onClick={() => onEditSection("info")}
-                  >
-                    <span className="text-xs">+ Ajouter une description</span>
-                  </Button>
-                )}
-                {quote.status && (
-                  <div className="mt-2">
-                    <BadgeStatus status={quote.status} />
-                  </div>
-                )}
               </div>
             </div>
+            
             <div className="flex flex-col items-end">
               <div className="flex items-center bg-slate-100 p-4 rounded-md min-w-[200px]">
                 {/* Company Logo */}

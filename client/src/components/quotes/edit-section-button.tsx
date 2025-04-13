@@ -1,23 +1,20 @@
-import { EditIcon } from "lucide-react";
-import { Button, ButtonProps } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { PencilIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-interface EditSectionButtonProps extends ButtonProps {
+interface EditSectionButtonProps {
   onClick: () => void;
-  className?: string;
 }
 
-export function EditSectionButton({ onClick, className, ...props }: EditSectionButtonProps) {
+export function EditSectionButton({ onClick }: EditSectionButtonProps) {
   return (
     <Button
-      type="button"
-      size="sm"
       variant="ghost"
-      className={cn("absolute top-2 right-2 p-2 h-auto text-slate-500 hover:text-slate-800 hover:bg-slate-100", className)}
+      size="sm"
+      className="absolute top-2 right-2 h-7 w-7 p-0"
       onClick={onClick}
-      {...props}
+      title="Modifier cette section"
     >
-      <EditIcon className="h-4 w-4" />
+      <PencilIcon className="h-4 w-4" />
     </Button>
   );
 }

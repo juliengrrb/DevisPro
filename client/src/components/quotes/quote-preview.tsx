@@ -77,65 +77,77 @@ export function QuotePreview({
               </div>
             </div>
             
-            <div className="flex flex-col items-end">
-              <div className="flex items-center bg-slate-100 p-4 rounded-md min-w-[200px]">
-                {/* Company Logo */}
-                <svg className="h-10 w-10 text-primary-700" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" />
-                  <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                <div className="ml-3">
-                  <p className="font-bold text-slate-900">DevisPro BTP</p>
-                  <p className="text-xs text-slate-500">Votre partenaire construction</p>
-                </div>
-              </div>
+            <div className="flex flex-col space-y-2">
+              {editable && (
+                <>
+                  <button 
+                    className="w-full p-2 border border-slate-200 rounded-md text-left bg-white flex items-center justify-between"
+                    onClick={() => onEditSection && onEditSection("client")}
+                  >
+                    <span className="text-slate-500">
+                      {quote.client ? 
+                        (quote.client.type === "company" ? 
+                          quote.client.companyName : 
+                          `${quote.client.firstName} ${quote.client.lastName}`
+                        ) : 
+                        "Sélectionner un client"
+                      }
+                    </span>
+                    <svg className="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                  
+                  <button 
+                    className="w-full p-2 border border-slate-200 rounded-md text-left bg-white flex items-center justify-between"
+                    onClick={() => onEditSection && onEditSection("project")}
+                  >
+                    <span className="text-slate-500">
+                      {quote.project ? quote.project.name : "Sélectionner un chantier"}
+                    </span>
+                    <svg className="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </>
+              )}
             </div>
           </div>
 
-          {/* Client and Project Info */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div className="bg-slate-50 p-4 rounded-md relative">
-              {editable && onEditSection && (
-                <EditSectionButton onClick={() => onEditSection("client")} />
-              )}
-              <h3 className="font-semibold text-slate-900 mb-2">Client</h3>
+          {/* Client and Project Info display in non-edit mode */}
+          {!editable && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               {quote.client && (
-                <div>
-                  {quote.client.type === "company" && (
-                    <p className="font-medium">{quote.client.companyName}</p>
-                  )}
-                  <p>{quote.client.firstName} {quote.client.lastName}</p>
-                  <p>{quote.client.email}</p>
-                  <p>{quote.client.phone}</p>
-                  <p>{quote.client.address}</p>
-                  <p>{quote.client.zipCode} {quote.client.city}</p>
-                  {quote.client.siret && <p>SIRET: {quote.client.siret}</p>}
+                <div className="p-4 rounded-md bg-slate-50">
+                  <h3 className="font-semibold text-slate-900 mb-2">Client</h3>
+                  <div>
+                    {quote.client.type === "company" && (
+                      <p className="font-medium">{quote.client.companyName}</p>
+                    )}
+                    <p>{quote.client.firstName} {quote.client.lastName}</p>
+                    <p>{quote.client.email}</p>
+                    <p>{quote.client.phone}</p>
+                    <p>{quote.client.address}</p>
+                    <p>{quote.client.zipCode} {quote.client.city}</p>
+                    {quote.client.siret && <p>SIRET: {quote.client.siret}</p>}
+                  </div>
+                </div>
+              )}
+
+              {quote.project && (
+                <div className="p-4 rounded-md bg-slate-50">
+                  <h3 className="font-semibold text-slate-900 mb-2">Chantier / Projet</h3>
+                  <p className="font-medium">{quote.project.name}</p>
+                  <p>{quote.project.description}</p>
+                  <p>{quote.project.address}</p>
+                  <p>{quote.project.zipCode} {quote.project.city}</p>
                 </div>
               )}
             </div>
-
-            {quote.project ? (
-              <div className="bg-slate-50 p-4 rounded-md relative">
-                {editable && onEditSection && (
-                  <EditSectionButton onClick={() => onEditSection("project")} />
-                )}
-                <h3 className="font-semibold text-slate-900 mb-2">Chantier / Projet</h3>
-                <p className="font-medium">{quote.project.name}</p>
-                <p>{quote.project.description}</p>
-                <p>{quote.project.address}</p>
-                <p>{quote.project.zipCode} {quote.project.city}</p>
-              </div>
-            ) : editable && (
-              <div className="bg-slate-50 p-4 rounded-md relative border border-dashed border-slate-300">
-                {editable && onEditSection && (
-                  <EditSectionButton onClick={() => onEditSection("project")} />
-                )}
-                <h3 className="font-semibold text-slate-900 mb-2">Chantier / Projet</h3>
-                <p className="text-slate-500 italic">Cliquez pour ajouter un projet</p>
-              </div>
-            )}
-          </div>
+          )}
+          
+          {/* Spacer for edit mode */}
+          {editable && <div className="mb-8"></div>}
 
           {/* Quote Content */}
           <div className="mb-8 relative">

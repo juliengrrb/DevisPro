@@ -5,6 +5,7 @@ import { QuotePreview } from "@/components/quotes/quote-preview";
 import { QuoteEditModal } from "@/components/quotes/quote-edit-modal";
 import { LineItemsModal } from "@/components/quotes/line-items-modal";
 import { QuoteNumberModal, QuoteNumberFormat } from "@/components/quotes/quote-number-modal";
+import { QuoteDatesModal } from "@/components/quotes/quote-dates-modal";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation, useRoute, useSearch } from "wouter";
@@ -27,7 +28,7 @@ export default function QuoteEditor() {
   const isNewQuote = !quoteId; // This is a new quote if there's no ID
   
   // State for modals
-  const [activeModal, setActiveModal] = useState<"info" | "client" | "project" | "conditions" | "notes" | "lineItems" | "numberFormat" | null>(null);
+  const [activeModal, setActiveModal] = useState<"info" | "client" | "project" | "conditions" | "notes" | "lineItems" | "numberFormat" | "dates" | null>(null);
   const [isLoading, setIsLoading] = useState(!!quoteId || !!duplicateId);
   
   // Fetch quote if editing an existing one
@@ -161,7 +162,7 @@ export default function QuoteEditor() {
   }, [existingQuote, duplicatedQuote, quoteId, duplicateId, clientId]);
 
   // Handle section edit
-  const handleEditSection = (section: "info" | "client" | "project" | "conditions" | "notes" | "lineItems" | "numberFormat") => {
+  const handleEditSection = (section: "info" | "client" | "project" | "conditions" | "notes" | "lineItems" | "numberFormat" | "dates") => {
     setActiveModal(section);
   };
 
@@ -216,6 +217,11 @@ export default function QuoteEditor() {
     else if (section === "numberFormat") {
       // Update quote number from the number format modal
       updatedData.number = data.formattedNumber;
+    }
+    else if (section === "dates") {
+      // Update dates from the dates modal
+      updatedData.issueDate = data.issueDate;
+      updatedData.validUntil = data.validUntil;
     }
     
     setQuoteData(updatedData);
@@ -410,6 +416,14 @@ export default function QuoteEditor() {
         onOpenChange={(open) => setActiveModal(open ? "numberFormat" : null)}
         currentNumber={quoteData.number}
         onSave={(format) => handleQuoteDataChange("numberFormat", format)}
+      />
+      
+      <QuoteDatesModal
+        open={activeModal === "dates"}
+        onOpenChange={(open) => setActiveModal(open ? "dates" : null)}
+        issueDate={quoteData.issueDate}
+        validUntil={quoteData.validUntil}
+        onSave={(issueDate, validUntil) => handleQuoteDataChange("dates", { issueDate, validUntil })}
       />
     </DashboardLayout>
   );

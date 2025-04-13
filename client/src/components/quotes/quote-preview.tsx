@@ -8,7 +8,7 @@ import { QuoteNumberFormat } from "./quote-number-modal";
 interface QuotePreviewProps {
   quote: any;
   editable?: boolean;
-  onEditSection?: (section: "info" | "client" | "project" | "conditions" | "notes" | "lineItems" | "numberFormat") => void;
+  onEditSection?: (section: "info" | "client" | "project" | "conditions" | "notes" | "lineItems" | "numberFormat" | "dates") => void;
   onNumberFormatChange?: (format: QuoteNumberFormat) => void;
 }
 
@@ -71,9 +71,18 @@ export function QuotePreview({
               </div>
               <div className="mt-2 text-slate-600 text-sm">
                 <p>En date du {formatDate(quote.issueDate)}</p>
-                {quote.validUntil && (
+                <div className="flex items-center gap-1">
                   <p>Valable jusqu'au {formatDate(quote.validUntil)}</p>
-                )}
+                  {editable && onEditSection && (
+                    <button 
+                      className="text-slate-400 hover:text-slate-600 transition-colors"
+                      onClick={() => onEditSection("dates")}
+                      title="Modifier les dates"
+                    >
+                      <span className="text-sm">✎</span>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
             
